@@ -1,0 +1,83 @@
+@model GiveAid.Web.Models.Partner
+@{
+    ViewData["Title"] = "Partner Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="h3 fw-bold text-dark mb-1">Partner Details</h1>
+                <p class="text-muted mb-0">Viewing record for <strong>@Model.Name</strong>.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+
+        <div class="giveaid-card p-4">
+            <div class="row g-4">
+                @if (!string.IsNullOrEmpty(Model.LogoPath))
+                {
+                    <div class="col-12 text-center">
+                        <img src="@Model.LogoPath" alt="@Model.Name logo" class="rounded border" style="max-height:150px;" />
+                    </div>
+                }
+
+                <div class="col-md-8">
+                    <label class="form-label text-muted small mb-0">Partner Name</label>
+                    <p class="fw-semibold mb-2">@Model.Name</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small mb-0">Partnership Type</label>
+                    <p class="mb-2"><span class="badge bg-info-subtle text-info">@Model.PartnerType</span></p>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label text-muted small mb-0">Synopsis</label>
+                    <p class="mb-2">@(Model.Description ?? "No description provided.")</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">Website URL</label>
+                    <p class="mb-2">
+                        @if (!string.IsNullOrEmpty(Model.WebsiteUrl))
+                        {
+                            <a href="@Model.WebsiteUrl" target="_blank" rel="noopener">@Model.WebsiteUrl</a>
+                        }
+                        else
+                        {
+                            <span>—</span>
+                        }
+                    </p>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted small mb-0">Order</label>
+                    <p class="mb-2">@Model.DisplayOrder</p>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted small mb-0">Status</label>
+                    <p class="mb-2">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success-subtle text-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                        }
+                    </p>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label text-muted small mb-0">Created</label>
+                    <p class="mb-2">@Model.CreatedAt.ToString("dd MMM yyyy")</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a asp-action="Index" class="btn btn-giveaid-outline btn-sm">&larr; Back to Partner List</a>
+        </div>
+    </div>
+</div>

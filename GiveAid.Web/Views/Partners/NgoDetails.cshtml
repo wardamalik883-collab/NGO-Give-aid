@@ -1,0 +1,122 @@
+@model GiveAid.Web.Models.NGO
+@{
+    ViewData["Title"] = Model.Name;
+    ViewData["FullWidth"] = true;
+}
+
+<!-- NGO Profile Hero -->
+<section class="py-5" style="background: linear-gradient(135deg, var(--giveaid-primary) 0%, var(--giveaid-primary-dark) 100%);">
+    <div class="container">
+        <div class="row align-items-center text-white">
+            <div class="col-md-3 text-center mb-3 mb-md-0">
+                @if (!string.IsNullOrEmpty(Model.LogoPath))
+                {
+                    <img src="@Model.LogoPath" alt="@Model.Name logo" class="rounded bg-white p-2" style="max-height:120px;max-width:100%;object-fit:contain;" />
+                }
+                else
+                {
+                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width:100px;height:100px;background:rgba(255,255,255,0.2);font-weight:700;font-size:36px;color:#fff;">
+                        @Model.Name[0]
+                    </div>
+                }
+            </div>
+            <div class="col-md-9">
+                <h1 class="fw-bold mb-1">@Model.Name</h1>
+                @if (!string.IsNullOrEmpty(Model.RegistrationNumber))
+                {
+                    <span class="badge bg-light text-dark mb-2">@Model.RegistrationNumber</span>
+                }
+                @if (!string.IsNullOrEmpty(Model.Address))
+                {
+                    <p class="mb-0 opacity-75"><small>@Model.Address</small></p>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container py-5">
+    <div class="row g-4">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <div class="giveaid-card p-4 mb-4">
+                <h3 class="fw-bold mb-3">Mission &amp; Description</h3>
+                @if (!string.IsNullOrEmpty(Model.Description))
+                {
+                    <p class="text-muted lh-lg">@Model.Description</p>
+                }
+                else
+                {
+                    <p class="text-muted fst-italic">No detailed description available for this organization.</p>
+                }
+            </div>
+
+            @if (Model.Causes != null && Model.Causes.Any())
+            {
+                <div class="giveaid-card p-4">
+                    <h3 class="fw-bold mb-3">Active Causes</h3>
+                    <div class="row g-3">
+                        @foreach (var cause in Model.Causes)
+                        {
+                            <div class="col-md-6">
+                                <div class="border rounded p-3">
+                                    <h6 class="fw-bold mb-1">@cause.Title</h6>
+                                    <p class="text-muted small mb-2">@cause.ShortDescription</p>
+                                    <a asp-controller="Causes" asp-action="Details" asp-route-id="@cause.Id" class="btn btn-sm btn-giveaid-outline">View Cause &rarr;</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="giveaid-card p-4">
+                <h5 class="fw-bold mb-3">Contact Information</h5>
+
+                @if (!string.IsNullOrEmpty(Model.Email))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted small mb-0">Email</label>
+                        <p class="mb-0"><a href="mailto:@Model.Email">@Model.Email</a></p>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Phone))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted small mb-0">Phone</label>
+                        <p class="mb-0"><a href="tel:@Model.Phone">@Model.Phone</a></p>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.WebsiteUrl))
+                {
+                    <div class="mb-3">
+                        <label class="form-label text-muted small mb-0">Website</label>
+                        <p class="mb-0"><a href="@Model.WebsiteUrl" target="_blank" rel="noopener">Visit Website &rarr;</a></p>
+                    </div>
+                }
+
+                <hr />
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">Status</span>
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success-subtle text-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-giveaid-outline">&larr; Back to Partners &amp; NGOs</a>
+    </div>
+</div>

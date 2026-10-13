@@ -1,0 +1,168 @@
+@model DonationFormViewModel
+@{
+    ViewData["Title"] = "Make a Donation — Support a Verified Humanitarian Cause";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header -->
+            <div class="text-center mb-4">
+                <span class="section-tag">Direct Humanitarian Giving</span>
+                <h1 class="h2 fw-bold text-dark mb-2">Support a Humanitarian Cause</h1>
+                <p class="text-muted mx-auto" style="max-width: 600px;">
+                    Your contribution directly empowers grassroots welfare programs across Pakistan. All simulated transactions are strictly validated.
+                </p>
+            </div>
+
+            <!-- Preselected Cause Context Banner (If Arriving from Cause Details) -->
+            @if (!string.IsNullOrWhiteSpace(Model.SelectedCauseTitle))
+            {
+                <div class="p-3 bg-white border border-primary-subtle rounded-3 shadow-sm mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="auth-icon-circle mb-0" style="width: 44px; height: 44px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <span class="badge bg-primary-subtle text-primary small">Target Campaign</span>
+                            <div class="fw-bold text-dark">@Model.SelectedCauseTitle</div>
+                            <div class="small text-muted">Organized by: @Model.SelectedCauseNgoName</div>
+                        </div>
+                    </div>
+                    <a asp-controller="Causes" asp-action="Index" class="btn btn-sm btn-giveaid-outline">
+                        Change Cause
+                    </a>
+                </div>
+            }
+
+            <!-- Donation Form Card -->
+            <div class="bg-white border rounded-3 p-4 p-md-5 shadow-sm">
+                <form asp-controller="Donate" asp-action="Index" method="post" novalidate id="donationForm">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 small rounded-3 mb-4" role="alert"></div>
+
+                    <!-- Step 1: Select Cause -->
+                    <div class="mb-4">
+                        <label asp-for="CauseId" class="form-label fw-bold text-dark">
+                            1. Select Charitable Cause <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="CauseId" asp-items="Model.AvailableCauses" class="form-select form-select-lg" aria-describedby="causeHelp">
+                            <option value="">-- Choose an active cause to support --</option>
+                        </select>
+                        <span asp-validation-for="CauseId" class="text-danger small"></span>
+                        <div id="causeHelp" class="form-text small text-muted">Choose any verified ongoing campaign.</div>
+                    </div>
+
+                    <!-- Step 2: Choose Donation Amount -->
+                    <div class="mb-4">
+                        <label asp-for="Amount" class="form-label fw-bold text-dark">
+                            2. Donation Amount (PKR) <span class="text-danger">*</span>
+                        </label>
+
+                        <!-- Quick-Select Preset Buttons -->
+                        <div class="d-flex flex-wrap gap-2 mb-2" role="group" aria-label="Preset donation amounts">
+                            <button type="button" class="btn btn-sm btn-giveaid-outline preset-btn" data-amount="1000">PKR 1,000</button>
+                            <button type="button" class="btn btn-sm btn-giveaid-outline preset-btn" data-amount="2500">PKR 2,500</button>
+                            <button type="button" class="btn btn-sm btn-giveaid-outline preset-btn" data-amount="5000">PKR 5,000</button>
+                            <button type="button" class="btn btn-sm btn-giveaid-outline preset-btn" data-amount="10000">PKR 10,000</button>
+                            <button type="button" class="btn btn-sm btn-giveaid-outline preset-btn" data-amount="25000">PKR 25,000</button>
+                        </div>
+
+                        <!-- Amount Input -->
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-light text-muted fw-bold">PKR</span>
+                            <input asp-for="Amount" class="form-control" id="donationAmountInput" placeholder="Enter amount (e.g., 5000)" type="number" min="1" max="10000000" step="1" required />
+                        </div>
+                        <span asp-validation-for="Amount" class="text-danger small"></span>
+                        <div class="form-text small text-muted">Accepted range: PKR 1 to PKR 10,000,000 per donation.</div>
+                    </div>
+
+                    <!-- Step 3: Donor Information -->
+                    <div class="mb-4 pt-3 border-top">
+                        <h2 class="h5 fw-bold text-dark mb-3">3. Donor Contact Details</h2>
+
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="alert alert-info py-2 px-3 small rounded-3 mb-3 d-flex align-items-center gap-2">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                                <span>Signed in as <strong>@User.Identity.Name</strong>. Donor contact details have been pre-filled from your profile.</span>
+                            </div>
+                        }
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="DonorName" class="form-control" id="donorNameInput" placeholder="Your Full Name" required />
+                            <label for="donorNameInput">Full Name <span class="text-danger">*</span></label>
+                            <span asp-validation-for="DonorName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="DonorEmail" class="form-control" id="donorEmailInput" placeholder="name@example.com" type="email" required />
+                            <label for="donorEmailInput">Email Address <span class="text-danger">*</span></label>
+                            <span asp-validation-for="DonorEmail" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input asp-for="DonorPhone" class="form-control" id="donorPhoneInput" placeholder="+92 300 1234567" type="tel" />
+                            <label for="donorPhoneInput">Phone Number (Optional)</label>
+                            <span asp-validation-for="DonorPhone" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Scope Notice Banner -->
+                    <div class="p-3 bg-light rounded-3 border mb-4">
+                        <div class="d-flex align-items-start gap-2">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-primary flex-shrink-0 mt-1" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <div class="small text-muted">
+                                <strong>Task 09 Form Verification Notice:</strong> Real debit/credit card numbers or CVVs are strictly forbidden and never requested. Submitting this form validates donor information and campaign eligibility. Simulated payment workflow and receipt generation will be activated in <em>Task 13</em>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn btn-giveaid-donate w-100 py-3 fs-5 justify-content-center" title="Validate and proceed with donation">
+                        <span>Continue &amp; Validate Donation</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const amountInput = document.getElementById('donationAmountInput');
+            const presetButtons = document.querySelectorAll('.preset-btn');
+
+            presetButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const amount = this.getAttribute('data-amount');
+                    amountInput.value = amount;
+                    
+                    // Highlight active button
+                    presetButtons.forEach(b => b.classList.remove('btn-giveaid-primary'));
+                    presetButtons.forEach(b => b.classList.add('btn-giveaid-outline'));
+                    this.classList.remove('btn-giveaid-outline');
+                    this.classList.add('btn-giveaid-primary');
+                });
+            });
+        });
+    </script>
+}

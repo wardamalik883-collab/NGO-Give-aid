@@ -1,0 +1,85 @@
+@model GiveAid.Web.ViewModels.NgoFormViewModel
+@{
+    ViewData["Title"] = "Add New NGO";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            <h1 class="h3 fw-bold text-dark mb-1">Add New NGO</h1>
+            <p class="text-muted">Register a new affiliated non-governmental organization.</p>
+        </div>
+
+        <div class="giveaid-card p-4">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label asp-for="Name" class="form-label fw-semibold"></label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g. Give-AID Humanitarian Foundation" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="RegistrationNumber" class="form-label fw-semibold"></label>
+                        <input asp-for="RegistrationNumber" class="form-control" placeholder="e.g. NGO-PK-2024-001" />
+                        <span asp-validation-for="RegistrationNumber" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe the NGO's mission and operations..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Address" class="form-label fw-semibold"></label>
+                        <input asp-for="Address" class="form-control" placeholder="Full address" />
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="contact@ngo.org" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label fw-semibold"></label>
+                        <input asp-for="Phone" class="form-control" placeholder="+92 51 1234567" />
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-8">
+                        <label asp-for="WebsiteUrl" class="form-label fw-semibold"></label>
+                        <input asp-for="WebsiteUrl" class="form-control" placeholder="https://www.example.org" />
+                        <span asp-validation-for="WebsiteUrl" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check form-switch">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                            <label asp-for="IsActive" class="form-check-label fw-semibold"></label>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="LogoFile" class="form-label fw-semibold"></label>
+                        <input asp-for="LogoFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
+                        <span asp-validation-for="LogoFile" class="text-danger small"></span>
+                        <div class="form-text">Accepted formats: JPG, JPEG, PNG, WebP. Maximum size: 2 MB.</div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-giveaid-primary">Create NGO</button>
+                    <a asp-action="Index" class="btn btn-giveaid-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -36,7 +36,7 @@
                         <a class="nav-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "About" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")" asp-area="" asp-controller="Home" asp-action="About" title="Learn more about our mission and team">About Us</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Causes" title="Explore social causes and donation campaigns">Causes</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Causes" ? "active" : "")" asp-area="" asp-controller="Causes" asp-action="Index" title="Explore social causes and donation campaigns">Causes</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/Programmes" title="View community welfare events and programmes">Programmes</a>

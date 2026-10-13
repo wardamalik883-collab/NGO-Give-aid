@@ -1,0 +1,88 @@
+@model DonationConfirmationViewModel
+@{
+    ViewData["Title"] = "Donation Validated — Summary Review";
+}
+
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="bg-white border rounded-3 p-4 p-md-5 shadow-sm text-start">
+                <!-- Status Icon -->
+                <div class="text-center mb-4">
+                    <div class="auth-icon-circle mx-auto mb-3" style="width: 64px; height: 64px; background-color: #dcfce7; color: #15803d;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <span class="badge bg-success-subtle text-success fw-bold px-3 py-1 rounded-pill small mb-2">Validation Complete</span>
+                    <h1 class="h3 fw-bold text-dark mb-1">Donation Details Verified</h1>
+                    <p class="text-muted small mb-0">The information below has passed all client and server-side validation checks.</p>
+                </div>
+
+                <!-- Verified Details Card -->
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Target Cause:</span>
+                        <span class="fw-bold text-dark text-end">@Model.CauseTitle</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Organizing NGO:</span>
+                        <span class="text-dark small">@Model.NgoName</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Donation Amount:</span>
+                        <span class="h4 fw-bold text-teal mb-0">PKR @Model.Amount.ToString("N0")</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Donor Full Name:</span>
+                        <span class="text-dark small">@Model.DonorName</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Donor Email:</span>
+                        <span class="text-dark small">@Model.DonorEmail</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.DonorPhone))
+                    {
+                        <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                            <span class="text-muted small">Donor Phone:</span>
+                            <span class="text-dark small">@Model.DonorPhone</span>
+                        </div>
+                    }
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">Verified Timestamp:</span>
+                        <span class="text-muted small">@Model.ValidatedAtUtc.ToString("dd MMM yyyy, HH:mm 'UTC'")</span>
+                    </div>
+                </div>
+
+                <!-- Next-Step Scope Notice (Requirement Task 09) -->
+                <div class="alert alert-secondary small rounded-3 mb-4" role="status">
+                    <div class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span>Task 09 Roadmap Milestone Achieved:</span>
+                    </div>
+                    <p class="mb-0 text-muted">
+                        Public cause selection, dynamic amount presets, and donor data validation are verified. 
+                        <strong>Simulated payment execution, digital receipts, and platform donation ledger records</strong> will be implemented in <strong>Task 13: Simulated Donation Workflow and History</strong>.
+                    </p>
+                </div>
+
+                <!-- Action CTAs -->
+                <div class="d-flex flex-column gap-2 text-center">
+                    <a asp-controller="Donate" asp-action="Index" class="btn btn-giveaid-donate justify-content-center">
+                        Submit Another Donation
+                    </a>
+                    <a asp-controller="Causes" asp-action="Index" class="btn btn-giveaid-outline">
+                        Browse More Causes
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-link text-muted text-decoration-none">
+                        &larr; Return to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,131 @@
+@model CausesIndexViewModel
+@{
+    ViewData["Title"] = "Active Causes & Humanitarian Campaigns";
+}
+
+<div class="container py-4">
+    <!-- Header with Search -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <span class="section-tag">Charitable Campaigns</span>
+            <h1 class="h2 fw-bold text-dark mb-1">Active Causes</h1>
+            <p class="text-muted mb-0">Discover verified humanitarian initiatives and direct your donations where they matter most.</p>
+        </div>
+
+        <!-- Search Form -->
+        <form asp-controller="Causes" asp-action="Index" method="get" class="d-flex gap-2" role="search" style="max-width: 360px;">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search causes..." value="@Model.SearchQuery" aria-label="Search causes" />
+                <button class="btn btn-giveaid-primary" type="submit" title="Search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span class="visually-hidden">Search</span>
+                </button>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+            {
+                <a asp-controller="Causes" asp-action="Index" class="btn btn-giveaid-outline" title="Clear filter">Clear</a>
+            }
+        </form>
+    </div>
+
+    <!-- Active Causes Listing -->
+    @if (Model.Causes.Any())
+    {
+        <div class="row g-4">
+            @foreach (var cause in Model.Causes)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <article class="giveaid-cause-card h-100">
+                        <!-- Image or Accessible Fallback -->
+                        @if (!string.IsNullOrWhiteSpace(cause.ImagePath))
+                        {
+                            <div class="cause-card-img-container" style="height: 190px; overflow: hidden;">
+                                <img src="@cause.ImagePath" class="w-100 h-100 object-fit-cover" alt="Campaign banner for @cause.Title" loading="lazy" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="cause-card-img-placeholder" role="img" aria-label="Campaign banner for @cause.Title">
+                                <div class="text-center p-3">
+                                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="mb-2" aria-hidden="true">
+                                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                                    </svg>
+                                    <div class="small fw-semibold">@cause.NgoName</div>
+                                </div>
+                                @if (cause.IsFeatured)
+                                {
+                                    <span class="position-absolute top-0 end-0 m-3 badge bg-danger text-white">Featured</span>
+                                }
+                            </div>
+                        }
+
+                        <div class="cause-card-body d-flex flex-column flex-grow-1">
+                            <span class="badge bg-light text-muted border align-self-start mb-2 small">@cause.NgoName</span>
+                            <h2 class="h5 fw-bold text-dark mb-2">
+                                <a asp-controller="Causes" asp-action="Details" asp-route-id="@cause.Id" class="text-dark text-decoration-none hover-primary">
+                                    @cause.Title
+                                </a>
+                            </h2>
+                            <p class="text-muted small flex-grow-1 mb-3">@cause.ShortDescription</p>
+
+                            <!-- Progress Bar -->
+                            <div class="cause-progress-wrapper mb-3">
+                                <div class="d-flex justify-content-between align-items-center small mb-1">
+                                    <span class="text-muted">Raised: <strong class="text-dark">PKR @cause.CurrentAmount.ToString("N0")</strong></span>
+                                    <span class="fw-bold text-teal">@cause.ProgressPercentage%</span>
+                                </div>
+                                <div class="cause-progress-bar" role="progressbar" aria-valuenow="@cause.ProgressPercentage" aria-valuemin="0" aria-valuemax="100" aria-label="Fundraising progress for @cause.Title">
+                                    <div class="cause-progress-fill" style="width: @cause.ProgressPercentage%;"></div>
+                                </div>
+                                <div class="text-end small text-muted mt-1">Target: PKR @cause.TargetAmount.ToString("N0")</div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="d-flex gap-2 pt-2 border-top">
+                                <a asp-controller="Causes" asp-action="Details" asp-route-id="@cause.Id" class="btn btn-sm btn-giveaid-outline flex-grow-1" title="Read full details about @cause.Title">
+                                    View Details
+                                </a>
+                                <a asp-controller="Donate" asp-action="Index" asp-route-causeId="@cause.Id" class="btn btn-sm btn-giveaid-donate flex-grow-1" title="Donate to @cause.Title">
+                                    Donate Now
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Empty-State Notice (Requirement FR-017) -->
+        <div class="text-center py-5">
+            <div class="auth-icon-circle mx-auto mb-3" style="width: 70px; height: 70px;">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-muted" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>
+            </div>
+            <h2 class="h4 fw-bold text-dark mb-2">No Active Causes Found</h2>
+            <p class="text-muted mx-auto mb-4" style="max-width: 500px;">
+                @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                {
+                    <span>No active causes matched your search query "<strong>@Model.SearchQuery</strong>". Try searching for different keywords or clear your search filter.</span>
+                }
+                else
+                {
+                    <span>There are currently no active charitable causes listed. New relief initiatives and humanitarian drives are added regularly by our certified NGO partners.</span>
+                }
+            </p>
+            <div class="d-flex justify-content-center gap-2">
+                @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                {
+                    <a asp-controller="Causes" asp-action="Index" class="btn btn-giveaid-primary">Clear Search Filter</a>
+                }
+                <a asp-controller="Home" asp-action="Index" class="btn btn-giveaid-outline">Return to Home</a>
+            </div>
+        </div>
+    }
+</div>

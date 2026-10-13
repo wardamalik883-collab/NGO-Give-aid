@@ -47,8 +47,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
-// Register role seeding service
+// Register role and data seeding services
 builder.Services.AddScoped<RoleSeedService>();
+builder.Services.AddScoped<DataSeedService>();
+
+// Register image upload service for NGO/Partner logo management (Task 10)
+builder.Services.AddScoped<ImageUploadService>();
 
 // Add MVC services to the container.
 builder.Services.AddControllersWithViews();
@@ -56,12 +60,15 @@ builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 // ============================================================
-// Seed roles and initial admin on startup
+// Seed roles, initial admin, and baseline data on startup
 // ============================================================
 using (var scope = app.Services.CreateScope())
 {
-    var seedService = scope.ServiceProvider.GetRequiredService<RoleSeedService>();
-    await seedService.SeedAsync();
+    var roleSeedService = scope.ServiceProvider.GetRequiredService<RoleSeedService>();
+    await roleSeedService.SeedAsync();
+
+    var dataSeedService = scope.ServiceProvider.GetRequiredService<DataSeedService>();
+    await dataSeedService.SeedAsync();
 }
 
 // ============================================================

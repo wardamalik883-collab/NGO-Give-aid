@@ -1,0 +1,157 @@
+@model CauseDetailsViewModel
+@{
+    ViewData["Title"] = $"{Model.Title} — Cause Details";
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Causes" asp-action="Index" class="text-decoration-none">Causes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Main Column: Narrative & Campaign Details -->
+        <div class="col-lg-8">
+            <article class="bg-white border rounded-3 p-4 p-md-5 shadow-sm">
+                <!-- Header & Tags -->
+                <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                    <span class="badge bg-primary-subtle text-primary fw-bold">Verified Cause</span>
+                    @if (Model.IsFeatured)
+                    {
+                        <span class="badge bg-danger text-white">Featured Appeal</span>
+                    }
+                    <span class="badge bg-light text-muted border">Campaign ID: #@Model.Id</span>
+                </div>
+
+                <h1 class="h2 fw-bold text-dark mb-3">@Model.Title</h1>
+
+                <!-- Short summary callout -->
+                <p class="lead text-muted mb-4 pb-3 border-bottom">
+                    @Model.ShortDescription
+                </p>
+
+                <!-- Cause Visual Treatment -->
+                @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+                {
+                    <div class="mb-4 rounded-3 overflow-hidden shadow-sm" style="max-height: 380px;">
+                        <img src="@Model.ImagePath" class="w-100 h-100 object-fit-cover" alt="Campaign visual for @Model.Title" />
+                    </div>
+                }
+                else
+                {
+                    <div class="cause-card-img-placeholder rounded-3 mb-4" style="height: 220px;" role="img" aria-label="Visual placeholder for @Model.Title">
+                        <div class="text-center p-3">
+                            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="mb-2" aria-hidden="true">
+                                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                            </svg>
+                            <div class="fw-semibold">@Model.NgoName</div>
+                        </div>
+                    </div>
+                }
+
+                <!-- Full Narrative Content -->
+                <section class="mb-4">
+                    <h2 class="h4 fw-bold text-dark mb-3">Campaign Background &amp; Objectives</h2>
+                    <div class="text-dark" style="line-height: 1.8; font-size: 1.025rem;">
+                        <p>@Model.FullDescription</p>
+                    </div>
+                </section>
+
+                <!-- Transparency & Verification Pledge -->
+                <div class="p-3 bg-light rounded-3 border mt-4">
+                    <div class="d-flex align-items-start gap-2">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="text-success flex-shrink-0 mt-1" aria-hidden="true">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                        <div>
+                            <div class="fw-bold text-dark small">Give-AID Verification &amp; Audit Trail</div>
+                            <div class="text-muted small">All disbursements for this campaign are logged with sequential reference codes. Donors receive transparent notifications when aid reaches on-ground beneficiaries.</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <!-- Sidebar: Fundraising Tracker, Donate CTA & Organizing NGO -->
+        <div class="col-lg-4">
+            <div class="position-sticky" style="top: 90px;">
+                <!-- Fundraising Status Card -->
+                <div class="bg-white border rounded-3 p-4 shadow-sm mb-4">
+                    <span class="text-primary fw-bold small text-uppercase letter-spacing-1">Fundraising Status</span>
+                    <div class="d-flex align-items-baseline gap-2 mt-2 mb-1">
+                        <span class="h3 fw-bold text-dark mb-0">PKR @Model.CurrentAmount.ToString("N0")</span>
+                    </div>
+                    <div class="text-muted small mb-3">
+                        Raised of <strong>PKR @Model.TargetAmount.ToString("N0")</strong> goal
+                    </div>
+
+                    <!-- Progress bar -->
+                    <div class="cause-progress-wrapper mb-3">
+                        <div class="cause-progress-bar" style="height: 10px;" role="progressbar" aria-valuenow="@Model.ProgressPercentage" aria-valuemin="0" aria-valuemax="100">
+                            <div class="cause-progress-fill" style="width: @Model.ProgressPercentage%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-muted mt-1">
+                            <span><strong>@Model.ProgressPercentage%</strong> funded</span>
+                            <span>Remaining: <strong>PKR @Model.RemainingAmount.ToString("N0")</strong></span>
+                        </div>
+                    </div>
+
+                    <!-- Donate Call to Action -->
+                    <a asp-controller="Donate" asp-action="Index" asp-route-causeId="@Model.Id" class="btn btn-giveaid-donate w-100 py-2 fs-6 mb-2 text-center" title="Contribute directly to @Model.Title">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                        <span>Donate to this Cause</span>
+                    </a>
+
+                    <a asp-controller="Causes" asp-action="Index" class="btn btn-sm btn-giveaid-outline w-100">
+                        &larr; Back to All Causes
+                    </a>
+                </div>
+
+                <!-- Organizing NGO Card -->
+                <div class="bg-white border rounded-3 p-4 shadow-sm">
+                    <span class="text-muted fw-bold small text-uppercase letter-spacing-1">Organizing NGO</span>
+                    <h3 class="h6 fw-bold text-dark mt-2 mb-1">@Model.NgoName</h3>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.NgoRegistrationNumber))
+                    {
+                        <div class="small text-muted mb-2">Govt Reg: <code>@Model.NgoRegistrationNumber</code></div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(Model.NgoDescription))
+                    {
+                        <p class="text-muted small mb-3">@Model.NgoDescription</p>
+                    }
+
+                    <div class="small border-top pt-2 mt-2">
+                        @if (!string.IsNullOrWhiteSpace(Model.NgoEmail))
+                        {
+                            <div class="text-muted mb-1 d-flex align-items-center gap-1">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <span>@Model.NgoEmail</span>
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrWhiteSpace(Model.NgoPhone))
+                        {
+                            <div class="text-muted d-flex align-items-center gap-1">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                                <span>@Model.NgoPhone</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

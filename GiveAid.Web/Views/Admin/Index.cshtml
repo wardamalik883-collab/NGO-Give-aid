@@ -30,11 +30,33 @@
                     <span class="badge bg-primary">RBAC Guard Active</span>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="p-3 border rounded-3 bg-light">
-                    <h5 class="fw-bold text-dark">Full Dashboard</h5>
-                    <p class="text-muted small mb-2">Full NGO & Cause management will be completed in Task 16.</p>
-                    <span class="badge bg-secondary">Roadmap Phase 4</span>
+        <div class="row g-4 mt-1">
+            <div class="col-md-6">
+                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h5 class="fw-bold text-dark mb-0">NGO Management</h5>
+                            <span class="badge bg-primary-subtle text-primary">Task 10</span>
+                        </div>
+                        <p class="text-muted small">Manage accredited partner NGOs, registration details, mission statements, and logos.</p>
+                    </div>
+                    <div>
+                        <a asp-controller="AdminNgos" asp-action="Index" class="btn btn-giveaid-primary btn-sm">Manage NGOs &rarr;</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h5 class="fw-bold text-dark mb-0">Partner Management</h5>
+                            <span class="badge bg-primary-subtle text-primary">Task 10</span>
+                        </div>
+                        <p class="text-muted small">Manage corporate partners, sponsors, partnership types, display order, and logos.</p>
+                    </div>
+                    <div>
+                        <a asp-controller="AdminPartners" asp-action="Index" class="btn btn-giveaid-primary btn-sm">Manage Partners &rarr;</a>
+                    </div>
                 </div>
             </div>
         </div>
