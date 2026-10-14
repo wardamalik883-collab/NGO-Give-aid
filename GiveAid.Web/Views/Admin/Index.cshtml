@@ -15,47 +15,86 @@
             </a>
         </div>
 
-        <div class="row g-4">
-            <div class="col-md-4">
+        <!-- Security Status -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
                 <div class="p-3 border rounded-3 bg-light">
                     <h5 class="fw-bold text-dark">Security Status</h5>
                     <p class="text-muted small mb-2">ASP.NET Core Identity authentication active.</p>
                     <span class="badge bg-success">Role: Admin Confirmed</span>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <div class="p-3 border rounded-3 bg-light">
                     <h5 class="fw-bold text-dark">Role Protection</h5>
-                    <p class="text-muted small mb-2"><code>[Authorize(Roles = "Admin")]</code> controller attribute is working.</p>
+                    <p class="text-muted small mb-2"><code>[Authorize(Roles = "Admin")]</code> controller attributes are guarding all endpoints.</p>
                     <span class="badge bg-primary">RBAC Guard Active</span>
                 </div>
             </div>
-        <div class="row g-4 mt-1">
-            <div class="col-md-6">
+        </div>
+
+        <h4 class="h5 fw-bold text-dark mb-3">Management Modules</h4>
+        <div class="row g-4">
+            <!-- NGO Management -->
+            <div class="col-md-6 col-lg-3">
                 <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
                     <div>
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">NGO Management</h5>
+                            <h5 class="fw-bold text-dark mb-0">NGOs</h5>
                             <span class="badge bg-primary-subtle text-primary">Task 10</span>
                         </div>
                         <p class="text-muted small">Manage accredited partner NGOs, registration details, mission statements, and logos.</p>
                     </div>
                     <div>
-                        <a asp-controller="AdminNgos" asp-action="Index" class="btn btn-giveaid-primary btn-sm">Manage NGOs &rarr;</a>
+                        <a asp-controller="AdminNgos" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage NGOs &rarr;</a>
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+
+            <!-- Partner Management -->
+            <div class="col-md-6 col-lg-3">
                 <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
                     <div>
                         <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">Partner Management</h5>
+                            <h5 class="fw-bold text-dark mb-0">Partners</h5>
                             <span class="badge bg-primary-subtle text-primary">Task 10</span>
                         </div>
-                        <p class="text-muted small">Manage corporate partners, sponsors, partnership types, display order, and logos.</p>
+                        <p class="text-muted small">Manage corporate partners, sponsors, partnership tiers, and logos.</p>
                     </div>
                     <div>
-                        <a asp-controller="AdminPartners" asp-action="Index" class="btn btn-giveaid-primary btn-sm">Manage Partners &rarr;</a>
+                        <a asp-controller="AdminPartners" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Partners &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Programmes Management -->
+            <div class="col-md-6 col-lg-3">
+                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between border-start border-primary border-3">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h5 class="fw-bold text-dark mb-0">Programmes</h5>
+                            <span class="badge bg-success-subtle text-success">Task 11</span>
+                        </div>
+                        <p class="text-muted small">Schedule community welfare drives, set venues, assign coordinators, and upload banners.</p>
+                    </div>
+                    <div>
+                        <a asp-controller="AdminProgrammes" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Programmes &rarr;</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Management -->
+            <div class="col-md-6 col-lg-3">
+                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between border-start border-success border-3">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h5 class="fw-bold text-dark mb-0">Gallery</h5>
+                            <span class="badge bg-success-subtle text-success">Task 11</span>
+                        </div>
+                        <p class="text-muted small">Upload high-res fieldwork photos, write captions, assign alt text, and link to events.</p>
+                    </div>
+                    <div>
+                        <a asp-controller="AdminGallery" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Gallery &rarr;</a>
                     </div>
                 </div>
             </div>

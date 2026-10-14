@@ -1,0 +1,70 @@
+@model GiveAid.Web.Models.GalleryImage
+@{
+    ViewData["Title"] = "Photo Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="h3 fw-bold text-dark mb-1">Gallery Photo Details</h1>
+                <p class="text-muted mb-0">Record review for <strong>@Model.Title</strong>.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+
+        <div class="giveaid-card p-4">
+            <div class="row g-4">
+                <div class="col-12 text-center bg-black rounded-3 p-2">
+                    <img src="@Model.ImagePath" alt="@Model.AltText" class="img-fluid rounded" style="max-height: 400px;" />
+                </div>
+
+                <div class="col-md-8">
+                    <label class="form-label text-muted small mb-0">Image Title</label>
+                    <p class="fw-semibold mb-2 fs-5 text-dark">@Model.Title</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small mb-0">Associated Programme</label>
+                    <p class="mb-2">
+                        @if (Model.Programme != null)
+                        {
+                            <a asp-controller="AdminProgrammes" asp-action="Details" asp-route-id="@Model.ProgrammeId" class="badge bg-primary-subtle text-primary text-decoration-none">
+                                @Model.Programme.Title
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary-subtle text-secondary">General Community</span>
+                        }
+                    </p>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label text-muted small mb-0">Caption &amp; Narrative</label>
+                    <p class="mb-2 text-secondary">@(Model.Caption ?? "No caption provided.")</p>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label text-muted small mb-0">Accessibility Alt Text (WCAG AA)</label>
+                    <p class="mb-2 text-dark font-monospace small bg-light p-2 rounded border">@Model.AltText</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">Uploaded At</label>
+                    <p class="mb-2 small text-muted">@Model.UploadedAt.ToString("dd MMM yyyy, h:mm tt")</p>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">Storage Path</label>
+                    <p class="mb-2 small font-monospace text-muted text-truncate" title="@Model.ImagePath">@Model.ImagePath</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a asp-action="Index" class="btn btn-giveaid-outline btn-sm">&larr; Back to Gallery List</a>
+        </div>
+    </div>
+</div>

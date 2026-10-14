@@ -31,11 +31,11 @@ This checklist tracks the implementation status of all confirmed requirements ac
 - [ ] `FR-017` Empty state handling for causes
 - [x] `FR-033` Public NGO & Partner showcase
 - [x] `FR-034` Partner and NGO profile detail views
-- [ ] `FR-038` Public programmes catalog (Upcoming vs. Past)
-- [ ] `FR-039` Programme detail view
-- [ ] `FR-044` Public photo gallery grid
-- [ ] `FR-045` Programme-associated gallery image filtering
-- [ ] `FR-046` Image modal/lightbox inspection
+- [x] `FR-038` Public programmes catalog (Upcoming vs. Past)
+- [x] `FR-039` Programme detail view
+- [x] `FR-044` Public photo gallery grid
+- [x] `FR-045` Programme-associated gallery image filtering
+- [x] `FR-046` Image modal/lightbox inspection
 - [ ] `FR-049` Frequently Asked Questions (FAQ) accordion
 - [ ] `FR-050` Contact Us inquiry form
 - [ ] `FR-051` Server-side validation for contact submissions
@@ -66,10 +66,10 @@ This checklist tracks the implementation status of all confirmed requirements ac
 - [x] `FR-035` Admin CRUD for affiliated NGOs
 - [x] `FR-036` Admin CRUD for corporate partners
 - [x] `FR-037` Upload sanitization for NGO/partner logos
-- [ ] `FR-042` Admin CRUD for welfare programmes
+- [x] `FR-042` Admin CRUD for welfare programmes
 - [ ] `FR-043` Admin moderation of volunteer/participation requests
-- [ ] `FR-047` Admin gallery image upload with metadata
-- [ ] `FR-048` Admin gallery image deletion with physical file cleanup
+- [x] `FR-047` Admin gallery image upload with metadata
+- [x] `FR-048` Admin gallery image deletion with physical file cleanup
 - [ ] `FR-052` Admin inquiry dashboard
 - [ ] `FR-053` Admin query status tracking and internal notes
 - [ ] `FR-059` Protected admin layout and route authorization

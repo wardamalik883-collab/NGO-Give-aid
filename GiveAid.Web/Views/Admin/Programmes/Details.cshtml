@@ -1,0 +1,121 @@
+@model GiveAid.Web.Models.Programme
+@{
+    ViewData["Title"] = "Programme Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <div>
+                <h1 class="h3 fw-bold text-dark mb-1">Programme Details</h1>
+                <p class="text-muted mb-0">Record review for <strong>@Model.Title</strong>.</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+            </div>
+        </div>
+
+        <div class="giveaid-card p-4">
+            <div class="row g-4">
+                @if (!string.IsNullOrEmpty(Model.ImagePath))
+                {
+                    <div class="col-12 text-center">
+                        <img src="@Model.ImagePath" alt="@Model.Title banner" class="rounded border w-100" style="max-height: 250px; object-fit: cover;" />
+                    </div>
+                }
+
+                <div class="col-md-8">
+                    <label class="form-label text-muted small mb-0">Programme Title</label>
+                    <p class="fw-semibold mb-2 fs-5 text-dark">@Model.Title</p>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label text-muted small mb-0">Operational Status</label>
+                    <p class="mb-2">
+                        @switch (Model.Status)
+                        {
+                            case "Scheduled":
+                                <span class="badge bg-primary-subtle text-primary">Scheduled</span>
+                                break;
+                            case "Completed":
+                                <span class="badge bg-success-subtle text-success">Completed</span>
+                                break;
+                            case "Cancelled":
+                                <span class="badge bg-danger-subtle text-danger">Cancelled</span>
+                                break;
+                            default:
+                                <span class="badge bg-secondary-subtle text-secondary">@Model.Status</span>
+                                break;
+                        }
+                    </p>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label text-muted small mb-0">Description &amp; Objectives</label>
+                    <p class="mb-2 text-secondary" style="white-space: pre-line;">@Model.Description</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">Start Date &amp; Time</label>
+                    <p class="fw-semibold mb-2">@Model.EventDate.ToString("ddd, dd MMM yyyy, h:mm tt")</p>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">End Date &amp; Time</label>
+                    <p class="fw-semibold mb-2">@(Model.EndDate.HasValue ? Model.EndDate.Value.ToString("ddd, dd MMM yyyy, h:mm tt") : "Not specified (single-session)")</p>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label text-muted small mb-0">Venue / Location</label>
+                    <p class="mb-2">@Model.Location</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">Lead Coordinator</label>
+                    <p class="mb-2">@(Model.CoordinatorName ?? "—")</p>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">Coordinator Contact</label>
+                    <p class="mb-2">@(Model.CoordinatorContact ?? "—")</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">Created At</label>
+                    <p class="mb-2 small text-muted">@Model.CreatedAt.ToString("dd MMM yyyy, h:mm tt")</p>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-muted small mb-0">Last Updated</label>
+                    <p class="mb-2 small text-muted">@(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("dd MMM yyyy, h:mm tt") : "Never modified")</p>
+                </div>
+
+                <!-- Linked Gallery Photos -->
+                <div class="col-12 border-top pt-3">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <label class="form-label text-muted small mb-0">Linked Gallery Images (@(Model.GalleryImages?.Count ?? 0))</label>
+                        <a asp-controller="AdminGallery" asp-action="Upload" class="btn btn-sm btn-outline-primary">+ Add Photo to Programme</a>
+                    </div>
+                    @if (Model.GalleryImages != null && Model.GalleryImages.Any())
+                    {
+                        <div class="row g-2">
+                            @foreach (var g in Model.GalleryImages)
+                            {
+                                <div class="col-3 col-md-2">
+                                    <a asp-controller="AdminGallery" asp-action="Details" asp-route-id="@g.Id" title="@g.Title">
+                                        <img src="@g.ImagePath" alt="@g.AltText" class="rounded border w-100" style="height: 70px; object-fit: cover;" />
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted small mb-0">No photos are currently linked to this programme.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <a asp-action="Index" class="btn btn-giveaid-outline btn-sm">&larr; Back to Programme List</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,49 @@
+@model GiveAid.Web.Models.GalleryImage
+@{
+    ViewData["Title"] = "Delete Photo";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="mb-4">
+            <h1 class="h3 fw-bold text-danger mb-1">Confirm Deletion</h1>
+            <p class="text-muted">You are about to permanently delete the following photo from the gallery.</p>
+        </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="giveaid-card p-4 border-danger">
+            <div class="d-flex align-items-start gap-3 mb-3">
+                <img src="@Model.ImagePath" alt="@Model.AltText" class="rounded" style="width:70px;height:50px;object-fit:cover;" />
+                <div>
+                    <h4 class="fw-bold mb-1">@Model.Title</h4>
+                    <p class="text-muted small mb-0">
+                        Programme: @(Model.Programme?.Title ?? "General Community") &middot; Uploaded: @Model.UploadedAt.ToString("dd MMM yyyy")
+                    </p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Caption))
+            {
+                <p class="text-muted small mb-3">@Model.Caption</p>
+            }
+
+            <div class="alert alert-warning small mb-0" role="alert">
+                <strong>Warning:</strong> This action cannot be undone. The database record and physical image file on disk will both be permanently deleted.
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">Yes, Delete Permanently</button>
+            </form>
+            <a asp-action="Index" class="btn btn-giveaid-outline">Cancel</a>
+        </div>
+    </div>
+</div>

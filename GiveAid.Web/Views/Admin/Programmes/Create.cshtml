@@ -1,0 +1,89 @@
+@model GiveAid.Web.ViewModels.ProgrammeFormViewModel
+@{
+    ViewData["Title"] = "Create Programme";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            <h1 class="h3 fw-bold text-dark mb-1">Create Welfare Programme</h1>
+            <p class="text-muted">Register a new community initiative, medical camp, or welfare drive.</p>
+        </div>
+
+        <div class="giveaid-card p-4">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label asp-for="Title" class="form-label fw-semibold"></label>
+                        <input asp-for="Title" class="form-control" placeholder="e.g. Winter Warmth Clothes Distribution" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Status" class="form-label fw-semibold"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Detail the objectives, beneficiaries, agenda, and field operational plan..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="StartDate" class="form-label fw-semibold"></label>
+                        <input asp-for="StartDate" type="datetime-local" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="StartDate" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="EndDate" class="form-label fw-semibold"></label>
+                        <input asp-for="EndDate" type="datetime-local" class="form-control" value="@(Model.EndDate.HasValue ? Model.EndDate.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                        <span asp-validation-for="EndDate" class="text-danger small"></span>
+                        <div class="form-text">Optional. Must not be earlier than start date.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Location" class="form-label fw-semibold"></label>
+                        <input asp-for="Location" class="form-control" placeholder="e.g. Sector G-9 Community Center, Islamabad" />
+                        <span asp-validation-for="Location" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CoordinatorName" class="form-label fw-semibold"></label>
+                        <input asp-for="CoordinatorName" class="form-control" placeholder="e.g. Dr. Haris Khan" />
+                        <span asp-validation-for="CoordinatorName" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="CoordinatorContact" class="form-label fw-semibold"></label>
+                        <input asp-for="CoordinatorContact" class="form-control" placeholder="+92 300 1234567" />
+                        <span asp-validation-for="CoordinatorContact" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="ImageFile" class="form-label fw-semibold"></label>
+                        <input asp-for="ImageFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
+                        <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                        <div class="form-text">Accepted formats: JPG, JPEG, PNG, WebP. Maximum size: 5 MB.</div>
+                    </div>
+                </div>
+
+                <hr class="my-4" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-giveaid-primary">Create Programme</button>
+                    <a asp-action="Index" class="btn btn-giveaid-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

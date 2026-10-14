@@ -1,0 +1,76 @@
+@model GiveAid.Web.ViewModels.GalleryImageFormViewModel
+@{
+    ViewData["Title"] = "Edit Photo Details";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="mb-4">
+            <h1 class="h3 fw-bold text-dark mb-1">Edit Gallery Photo</h1>
+            <p class="text-muted">Update narrative, accessibility tags, or associated programme.</p>
+        </div>
+
+        <div class="giveaid-card p-4">
+            <form asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="ExistingImagePath" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-8">
+                        <label asp-for="Title" class="form-label fw-semibold"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="ProgrammeId" class="form-label fw-semibold"></label>
+                        <select asp-for="ProgrammeId" asp-items="Model.AvailableProgrammes" class="form-select"></select>
+                        <span asp-validation-for="ProgrammeId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Caption" class="form-label fw-semibold"></label>
+                        <textarea asp-for="Caption" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Caption" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="AltText" class="form-label fw-semibold"></label>
+                        <input asp-for="AltText" class="form-control" />
+                        <span asp-validation-for="AltText" class="text-danger small"></span>
+                        <div class="form-text">WCAG AA Requirement: Accessibility descriptive summary.</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="ImageFile" class="form-label fw-semibold">Replace Photo File (Optional)</label>
+                        <input asp-for="ImageFile" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp" />
+                        <span asp-validation-for="ImageFile" class="text-danger small"></span>
+                        <div class="form-text">Leave empty to keep current photo. Supported: JPG, PNG, WebP (max 5 MB).</div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ExistingImagePath))
+                    {
+                        <div class="col-12">
+                            <label class="form-label fw-semibold text-muted">Current Photo</label>
+                            <div>
+                                <img src="@Model.ExistingImagePath" alt="Current preview" class="rounded border" style="max-height: 150px;" />
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <hr class="my-4" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-giveaid-primary">Save Changes</button>
+                    <a asp-action="Index" class="btn btn-giveaid-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

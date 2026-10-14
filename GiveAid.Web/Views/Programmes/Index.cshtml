@@ -1,0 +1,184 @@
+@model GiveAid.Web.ViewModels.ProgrammesIndexViewModel
+@{
+    ViewData["Title"] = "Welfare Programmes & Events";
+}
+
+<!-- Hero Section -->
+<section class="py-5 bg-light border-bottom">
+    <div class="container text-center">
+        <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">Community Impact</span>
+        <h1 class="display-5 fw-bold text-dark mb-3">Programmes &amp; Welfare Initiatives</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 720px;">
+            Explore our community welfare events, disaster relief missions, healthcare clinics, and education outreach workshops. Join hands to create positive change.
+        </p>
+    </div>
+</section>
+
+<div class="container py-5">
+    @if (!Model.HasAnyProgrammes)
+    {
+        <div class="giveaid-card p-5 text-center my-4">
+            <div class="mb-3">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--giveaid-text-light)" stroke-width="1.5">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+            <h3 class="h4 fw-bold text-dark mb-2">No Programmes Scheduled Yet</h3>
+            <p class="text-muted mb-4" style="max-width: 500px; margin: 0 auto;">
+                We are actively planning our upcoming community welfare drives. Please check back soon or browse our ongoing causes.
+            </p>
+            <a asp-controller="Causes" asp-action="Index" class="btn btn-giveaid-primary">Explore Causes</a>
+        </div>
+    }
+    else
+    {
+        <!-- Upcoming Programmes Section -->
+        <section class="mb-5">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <h2 class="h3 fw-bold text-dark mb-1">Upcoming Programmes</h2>
+                    <p class="text-muted mb-0">Upcoming welfare drives and workshops you can participate in.</p>
+                </div>
+                <span class="badge bg-success-subtle text-success fs-6 px-3 py-2 rounded-pill">
+                    @Model.UpcomingProgrammes.Count Upcoming
+                </span>
+            </div>
+
+            @if (!Model.UpcomingProgrammes.Any())
+            {
+                <div class="giveaid-card p-4 text-center text-muted">
+                    <p class="mb-0">There are currently no upcoming programmes scheduled. Stay tuned for announcements!</p>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var programme in Model.UpcomingProgrammes)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <div class="giveaid-card h-100 d-flex flex-column overflow-hidden shadow-sm hover-shadow transition">
+                                <div class="position-relative" style="height: 200px; background-color: var(--giveaid-primary-subtle);">
+                                    @if (!string.IsNullOrEmpty(programme.ImagePath))
+                                    {
+                                        <img src="@programme.ImagePath" alt="@programme.Title" class="w-100 h-100" style="object-fit: cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                        </div>
+                                    }
+                                    <span class="position-absolute top-0 end-0 m-3 badge bg-primary shadow-sm">
+                                        @programme.Status
+                                    </span>
+                                </div>
+                                <div class="p-4 d-flex flex-column flex-grow-1">
+                                    <div class="text-primary small fw-semibold mb-2 d-flex align-items-center gap-1">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        @programme.EventDate.ToString("dd MMM yyyy, h:mm tt")
+                                    </div>
+                                    <h3 class="h5 fw-bold text-dark mb-2">@programme.Title</h3>
+                                    <p class="text-muted small mb-3 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                        @programme.Description
+                                    </p>
+                                    <div class="pt-3 border-top d-flex align-items-center justify-content-between">
+                                        <div class="small text-muted text-truncate me-2" style="max-width: 160px;" title="@programme.Location">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                <circle cx="12" cy="10" r="3"></circle>
+                                            </svg>
+                                            @programme.Location
+                                        </div>
+                                        <a asp-action="Details" asp-route-id="@programme.Id" class="btn btn-sm btn-giveaid-outline">
+                                            View Details &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+
+        <!-- Past Programmes Section -->
+        <section>
+            <div class="d-flex align-items-center justify-content-between mb-4 pt-3 border-top">
+                <div>
+                    <h2 class="h3 fw-bold text-dark mb-1">Past Programmes &amp; Completed Drives</h2>
+                    <p class="text-muted mb-0">Review the milestones achieved in our completed welfare missions.</p>
+                </div>
+                <span class="badge bg-secondary-subtle text-secondary fs-6 px-3 py-2 rounded-pill">
+                    @Model.PastProgrammes.Count Completed
+                </span>
+            </div>
+
+            @if (!Model.PastProgrammes.Any())
+            {
+                <div class="giveaid-card p-4 text-center text-muted">
+                    <p class="mb-0">No past programmes archived yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="row g-4">
+                    @foreach (var programme in Model.PastProgrammes)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <div class="giveaid-card h-100 d-flex flex-column overflow-hidden shadow-sm opacity-90">
+                                <div class="position-relative" style="height: 180px; background-color: var(--giveaid-neutral-200, #e9ecef);">
+                                    @if (!string.IsNullOrEmpty(programme.ImagePath))
+                                    {
+                                        <img src="@programme.ImagePath" alt="@programme.Title" class="w-100 h-100" style="object-fit: cover; filter: grayscale(20%);" />
+                                    }
+                                    else
+                                    {
+                                        <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted">
+                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                        </div>
+                                    }
+                                    <span class="position-absolute top-0 end-0 m-3 badge bg-secondary">
+                                        Completed
+                                    </span>
+                                </div>
+                                <div class="p-4 d-flex flex-column flex-grow-1">
+                                    <div class="text-muted small fw-semibold mb-2">
+                                        Held on @programme.EventDate.ToString("dd MMM yyyy")
+                                    </div>
+                                    <h3 class="h5 fw-bold text-dark mb-2">@programme.Title</h3>
+                                    <p class="text-muted small mb-3 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                        @programme.Description
+                                    </p>
+                                    <div class="pt-3 border-top d-flex align-items-center justify-content-between">
+                                        <div class="small text-muted text-truncate me-2" style="max-width: 160px;">
+                                            @programme.Location
+                                        </div>
+                                        <a asp-action="Details" asp-route-id="@programme.Id" class="btn btn-sm btn-outline-secondary">
+                                            View Report &rarr;
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    }
+</div>

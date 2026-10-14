@@ -12,7 +12,7 @@ public class ImageUploadService
 
     /// <summary>
     /// Allowed image extensions and their corresponding magic byte signatures.
-    /// FR-037: .jpg, .jpeg, .png, .webp only.
+    /// FR-037 & FR-047: .jpg, .jpeg, .png, .webp only.
     /// </summary>
     private static readonly Dictionary<string, byte[][]> AllowedSignatures = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -23,9 +23,9 @@ public class ImageUploadService
     };
 
     /// <summary>
-    /// Maximum allowed file size: 2 MB (FR-037).
+    /// Default maximum allowed file size: 5 MB (FR-047, configurable per upload).
     /// </summary>
-    private const long MaxFileSizeBytes = 2 * 1024 * 1024;
+    public const long DefaultMaxFileSizeBytes = 5 * 1024 * 1024;
 
     public ImageUploadService(IWebHostEnvironment environment, ILogger<ImageUploadService> logger)
     {
@@ -38,16 +38,23 @@ public class ImageUploadService
     /// Returns the relative URL path on success, or null with error message on failure.
     /// </summary>
     /// <param name="file">The uploaded file.</param>
-    /// <param name="subfolder">Subfolder name under uploads/ (e.g., "ngos" or "partners").</param>
+    /// <param name="subfolder">Subfolder name under uploads/ (e.g., "ngos", "partners", "programmes", "gallery").</param>
+    /// <param name="maxSizeBytes">Optional maximum file size in bytes (defaults to 5 MB).</param>
     /// <returns>Tuple of (relativePath, errorMessage). One will be null.</returns>
-    public async Task<(string? RelativePath, string? ErrorMessage)> SaveImageAsync(IFormFile file, string subfolder)
+    public async Task<(string? RelativePath, string? ErrorMessage)> SaveImageAsync(
+        IFormFile file,
+        string subfolder,
+        long maxSizeBytes = DefaultMaxFileSizeBytes)
     {
         if (file == null || file.Length == 0)
             return (null, "No file was uploaded.");
 
-        // 1. Validate file size
-        if (file.Length > MaxFileSizeBytes)
-            return (null, $"File size ({file.Length / (1024 * 1024.0):F1} MB) exceeds the maximum allowed size of 2 MB.");
+        // 1. Validate file size against configurable limit
+        if (file.Length > maxSizeBytes)
+        {
+            var maxMb = maxSizeBytes / (1024 * 1024.0);
+            return (null, $"File size ({file.Length / (1024 * 1024.0):F1} MB) exceeds the maximum allowed size of {maxMb:F0} MB.");
+        }
 
         // 2. Validate extension (do not trust browser-supplied filename alone)
         var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();

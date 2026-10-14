@@ -1,0 +1,252 @@
+@model GiveAid.Web.ViewModels.ProgrammeDetailsViewModel
+@{
+    ViewData["Title"] = Model.Programme.Title;
+}
+
+<div class="container py-4 py-lg-5">
+    <!-- Breadcrumb & Back Navigation -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Programmes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Programme.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4 g-lg-5">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+            <div class="giveaid-card p-4 p-md-5 mb-4 shadow-sm">
+                <!-- Status Badge & Date -->
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                    <span class="badge @(Model.IsUpcoming ? "bg-success" : "bg-secondary") px-3 py-2 fs-6 rounded-pill">
+                        @(Model.IsUpcoming ? "Upcoming Programme" : "Past Event") &middot; @Model.Programme.Status
+                    </span>
+                    <span class="text-muted small">
+                        Published @Model.Programme.CreatedAt.ToString("dd MMM yyyy")
+                    </span>
+                </div>
+
+                <h1 class="h2 fw-bold text-dark mb-4">@Model.Programme.Title</h1>
+
+                <!-- Banner Image -->
+                @if (!string.IsNullOrEmpty(Model.Programme.ImagePath))
+                {
+                    <div class="rounded-3 overflow-hidden mb-4 shadow-sm" style="max-height: 420px;">
+                        <img src="@Model.Programme.ImagePath" alt="@Model.Programme.Title" class="w-100 h-100" style="object-fit: cover;" />
+                    </div>
+                }
+
+                <!-- Key Metrics Bar -->
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <div class="row g-3 text-center text-sm-start">
+                        <div class="col-sm-6">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="p-2 rounded bg-primary-subtle text-primary">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span class="text-muted small d-block">Start Time</span>
+                                    <strong class="text-dark">@Model.Programme.EventDate.ToString("ddd, dd MMM yyyy, h:mm tt")</strong>
+                                </div>
+                            </div>
+                        </div>
+                        @if (Model.Programme.EndDate.HasValue)
+                        {
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="p-2 rounded bg-primary-subtle text-primary">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <span class="text-muted small d-block">End Time</span>
+                                        <strong class="text-dark">@Model.Programme.EndDate.Value.ToString("ddd, dd MMM yyyy, h:mm tt")</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Description & Agenda -->
+                <div class="programme-description mb-4">
+                    <h3 class="h5 fw-bold text-dark border-bottom pb-2 mb-3">Programme Overview &amp; Objectives</h3>
+                    <div class="text-secondary" style="white-space: pre-line; line-height: 1.8;">
+                        @Model.Programme.Description
+                    </div>
+                </div>
+
+                <!-- Event Details Section -->
+                <div class="programme-details mb-4">
+                    <h3 class="h5 fw-bold text-dark border-bottom pb-2 mb-3">Venue &amp; Location</h3>
+                    <div class="d-flex align-items-start gap-2 text-secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-danger flex-shrink-0 mt-1">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                        </svg>
+                        <div>
+                            <strong>@Model.Programme.Location</strong>
+                            <p class="small text-muted mb-0">Detailed route guidance and volunteer instructions will be shared via email prior to start.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Programme Gallery Section (FR-039 / FR-042) -->
+            <div class="giveaid-card p-4 p-md-5 mb-4 shadow-sm">
+                <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+                    <div>
+                        <h3 class="h5 fw-bold text-dark mb-1">Programme Gallery</h3>
+                        <p class="text-muted small mb-0">Photos and field captures associated with this initiative.</p>
+                    </div>
+                    @if (Model.RelatedGalleryImages.Any())
+                    {
+                        <span class="badge bg-primary-subtle text-primary">@Model.RelatedGalleryImages.Count Photos</span>
+                    }
+                </div>
+
+                @if (!Model.RelatedGalleryImages.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <p class="mb-0">No gallery photos have been uploaded for this programme yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="row g-3">
+                        @foreach (var img in Model.RelatedGalleryImages)
+                        {
+                            <div class="col-sm-6 col-md-4">
+                                <div class="position-relative overflow-hidden rounded-3 shadow-sm ratio ratio-4x3 cursor-pointer gallery-card-hover"
+                                     data-bs-toggle="modal" data-bs-target="#galleryImageModal"
+                                     data-bs-img-src="@img.ImagePath"
+                                     data-bs-img-title="@img.Title"
+                                     data-bs-img-alt="@img.AltText"
+                                     data-bs-img-caption="@img.Caption"
+                                     style="cursor: pointer;">
+                                    <img src="@img.ImagePath" alt="@img.AltText" class="w-100 h-100" style="object-fit: cover;" />
+                                    <div class="position-absolute bottom-0 start-0 end-0 p-2 bg-dark bg-opacity-75 text-white small text-truncate">
+                                        @img.Title
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+            <!-- Coordinator Card -->
+            <div class="giveaid-card p-4 mb-4 shadow-sm">
+                <h4 class="h6 fw-bold text-dark text-uppercase tracking-wider mb-3">Coordinator Information</h4>
+                @if (!string.IsNullOrEmpty(Model.Programme.CoordinatorName))
+                {
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary-subtle text-primary fw-bold d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 18px;">
+                            @Model.Programme.CoordinatorName[0]
+                        </div>
+                        <div>
+                            <strong class="d-block text-dark">@Model.Programme.CoordinatorName</strong>
+                            <span class="text-muted small">Lead Programme Lead</span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted small mb-3">Give-AID Operations Team</p>
+                }
+
+                @if (!string.IsNullOrEmpty(Model.Programme.CoordinatorContact))
+                {
+                    <div class="border-top pt-3">
+                        <span class="text-muted small d-block mb-1">Direct Contact:</span>
+                        <a href="tel:@Model.Programme.CoordinatorContact" class="text-decoration-none fw-semibold">
+                            @Model.Programme.CoordinatorContact
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <!-- Get Involved Card -->
+            <div class="giveaid-card p-4 shadow-sm bg-primary-subtle border-primary">
+                <h4 class="h5 fw-bold text-primary mb-2">Want to Participate?</h4>
+                <p class="text-secondary small mb-3">
+                    Volunteers make our welfare initiatives possible. Join us on-site or support our supplies fund.
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="/Contact" class="btn btn-giveaid-primary">Contact Coordinators</a>
+                    <a asp-controller="Causes" asp-action="Index" class="btn btn-giveaid-outline">Donate to Relief Causes</a>
+                </div>
+            </div>
+
+            <div class="mt-4 text-center">
+                <a asp-action="Index" class="btn btn-giveaid-outline btn-sm">
+                    &larr; Back to All Programmes
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lightbox Modal for Gallery Images -->
+<div class="modal fade" id="galleryImageModal" tabindex="-1" aria-labelledby="galleryImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="galleryImageModalLabel">Photo Preview</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0 text-center bg-black">
+                <img id="modalPreviewImg" src="" alt="" class="img-fluid" style="max-height: 75vh; width: auto; margin: 0 auto; display: block;" />
+            </div>
+            <div class="modal-footer justify-content-between">
+                <div>
+                    <h6 id="modalImgTitle" class="fw-bold mb-1 text-dark"></h6>
+                    <p id="modalImgCaption" class="text-muted small mb-0"></p>
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var galleryModal = document.getElementById('galleryImageModal');
+            if (galleryModal) {
+                galleryModal.addEventListener('show.bs.modal', function (event) {
+                    var trigger = event.relatedTarget;
+                    var src = trigger.getAttribute('data-bs-img-src');
+                    var title = trigger.getAttribute('data-bs-img-title');
+                    var alt = trigger.getAttribute('data-bs-img-alt');
+                    var caption = trigger.getAttribute('data-bs-img-caption');
+
+                    var modalImg = galleryModal.querySelector('#modalPreviewImg');
+                    var modalTitle = galleryModal.querySelector('#modalImgTitle');
+                    var modalCaption = galleryModal.querySelector('#modalImgCaption');
+
+                    modalImg.src = src;
+                    modalImg.alt = alt || title;
+                    modalTitle.textContent = title;
+                    modalCaption.textContent = caption || '';
+                });
+            }
+        });
+    </script>
+}

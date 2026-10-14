@@ -1,0 +1,153 @@
+@model GiveAid.Web.ViewModels.GalleryIndexViewModel
+@{
+    ViewData["Title"] = "Photo Gallery & Field Moments";
+}
+
+<!-- Hero Section -->
+<section class="py-5 bg-light border-bottom">
+    <div class="container text-center">
+        <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">Our Moments</span>
+        <h1 class="display-5 fw-bold text-dark mb-3">Community Photo Gallery</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 720px;">
+            A visual chronicle of our welfare drives, volunteer workshops, disaster relief operations, and the lives transformed through your generous support.
+        </p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <!-- Filter Tabs / Pills -->
+    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mb-5">
+        <a asp-action="Index" class="btn btn-sm rounded-pill px-3 @(Model.SelectedProgrammeId == null ? "btn-giveaid-primary" : "btn-outline-secondary")">
+            All Photos (@Model.Images.Count)
+        </a>
+        @foreach (var programme in Model.Programmes)
+        {
+            <a asp-action="Index" asp-route-programmeId="@programme.Id"
+               class="btn btn-sm rounded-pill px-3 @(Model.SelectedProgrammeId == programme.Id ? "btn-giveaid-primary" : "btn-outline-secondary")">
+                @programme.Title
+            </a>
+        }
+    </div>
+
+    @if (!Model.Images.Any())
+    {
+        <div class="giveaid-card p-5 text-center my-4">
+            <div class="mb-3">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--giveaid-text-light)" stroke-width="1.5">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+            </div>
+            <h3 class="h4 fw-bold text-dark mb-2">No Gallery Photos Found</h3>
+            <p class="text-muted mb-4" style="max-width: 500px; margin: 0 auto;">
+                @(Model.SelectedProgrammeId.HasValue 
+                    ? "There are currently no photos linked to this specific programme. Try viewing all photos."
+                    : "Our media team is actively documenting upcoming events. Please check back soon.")
+            </p>
+            @if (Model.SelectedProgrammeId.HasValue)
+            {
+                <a asp-action="Index" class="btn btn-giveaid-outline">View All Photos</a>
+            }
+        </div>
+    }
+    else
+    {
+        <!-- Responsive Photo Grid (FR-042) -->
+        <div class="row g-4">
+            @foreach (var img in Model.Images)
+            {
+                <div class="col-sm-6 col-lg-4 col-xl-3">
+                    <div class="giveaid-card h-100 d-flex flex-column overflow-hidden shadow-sm hover-shadow transition cursor-pointer"
+                         data-bs-toggle="modal" data-bs-target="#galleryImageModal"
+                         data-bs-img-src="@img.ImagePath"
+                         data-bs-img-title="@img.Title"
+                         data-bs-img-alt="@img.AltText"
+                         data-bs-img-caption="@img.Caption"
+                         data-bs-programme="@(img.Programme?.Title ?? "Community Fieldwork")"
+                         style="cursor: pointer;">
+                        
+                        <div class="position-relative ratio ratio-4x3 overflow-hidden bg-light">
+                            <img src="@img.ImagePath" alt="@img.AltText" class="w-100 h-100" style="object-fit: cover; transition: transform 0.3s ease;"
+                                 onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" />
+                            
+                            @if (img.Programme != null)
+                            {
+                                <span class="position-absolute top-0 end-0 m-2 badge bg-primary bg-opacity-90 shadow-sm small">
+                                    @img.Programme.Title
+                                </span>
+                            }
+                        </div>
+
+                        <div class="p-3 d-flex flex-column flex-grow-1">
+                            <h4 class="h6 fw-bold text-dark mb-1 text-truncate" title="@img.Title">@img.Title</h4>
+                            @if (!string.IsNullOrEmpty(img.Caption))
+                            {
+                                <p class="text-muted small mb-2 flex-grow-1" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    @img.Caption
+                                </p>
+                            }
+                            <div class="text-muted small mt-auto pt-2 border-top d-flex align-items-center justify-content-between">
+                                <span>@img.UploadedAt.ToString("dd MMM yyyy")</span>
+                                <span class="text-primary fw-semibold small">View &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<!-- Modal Lightbox (FR-044) -->
+<div class="modal fade" id="galleryImageModal" tabindex="-1" aria-labelledby="galleryImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <span id="modalProgrammeBadge" class="badge bg-primary-subtle text-primary"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-3 p-md-4">
+                <div class="bg-black rounded-3 overflow-hidden mb-3" style="max-height: 70vh;">
+                    <img id="modalPreviewImg" src="" alt="" class="img-fluid" style="max-height: 70vh; width: auto; margin: 0 auto; display: block;" />
+                </div>
+                <div class="text-start px-2">
+                    <h3 id="modalImgTitle" class="h5 fw-bold text-dark mb-1"></h3>
+                    <p id="modalImgCaption" class="text-muted mb-0"></p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var galleryModal = document.getElementById('galleryImageModal');
+            if (galleryModal) {
+                galleryModal.addEventListener('show.bs.modal', function (event) {
+                    var trigger = event.relatedTarget;
+                    var src = trigger.getAttribute('data-bs-img-src');
+                    var title = trigger.getAttribute('data-bs-img-title');
+                    var alt = trigger.getAttribute('data-bs-img-alt');
+                    var caption = trigger.getAttribute('data-bs-img-caption');
+                    var programme = trigger.getAttribute('data-bs-programme');
+
+                    var modalImg = galleryModal.querySelector('#modalPreviewImg');
+                    var modalTitle = galleryModal.querySelector('#modalImgTitle');
+                    var modalCaption = galleryModal.querySelector('#modalImgCaption');
+                    var modalBadge = galleryModal.querySelector('#modalProgrammeBadge');
+
+                    modalImg.src = src;
+                    modalImg.alt = alt || title;
+                    modalTitle.textContent = title;
+                    modalCaption.textContent = caption || '';
+                    modalBadge.textContent = programme || 'Give-AID Welfare';
+                });
+            }
+        });
+    </script>
+}
