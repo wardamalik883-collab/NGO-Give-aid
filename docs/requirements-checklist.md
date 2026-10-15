@@ -36,9 +36,9 @@ This checklist tracks the implementation status of all confirmed requirements ac
 - [x] `FR-044` Public photo gallery grid
 - [x] `FR-045` Programme-associated gallery image filtering
 - [x] `FR-046` Image modal/lightbox inspection
-- [ ] `FR-049` Frequently Asked Questions (FAQ) accordion
-- [ ] `FR-050` Contact Us inquiry form
-- [ ] `FR-051` Server-side validation for contact submissions
+- [x] `FR-049` Frequently Asked Questions (FAQ) accordion
+- [x] `FR-050` Contact Us inquiry form
+- [x] `FR-051` Server-side validation for contact submissions
 
 ### 1.2 User Registration & Member Workflows
 - [ ] `FR-020` Public donation initiation form
@@ -53,7 +53,7 @@ This checklist tracks the implementation status of all confirmed requirements ac
 - [ ] `FR-032` User profile management & password change
 - [ ] `FR-040` Expression of interest / volunteer submission
 - [ ] `FR-041` Prevention of duplicate programme interest submissions
-- [ ] `FR-054` Contact queries linked to logged-in user profile
+- [x] `FR-054` Contact queries linked to logged-in user profile
 - [ ] `FR-055` "Invite a Friend" referral submission
 - [ ] `FR-056` Anti-abuse rate limiting on invitations
 
@@ -70,8 +70,8 @@ This checklist tracks the implementation status of all confirmed requirements ac
 - [ ] `FR-043` Admin moderation of volunteer/participation requests
 - [x] `FR-047` Admin gallery image upload with metadata
 - [x] `FR-048` Admin gallery image deletion with physical file cleanup
-- [ ] `FR-052` Admin inquiry dashboard
-- [ ] `FR-053` Admin query status tracking and internal notes
+- [x] `FR-052` Admin inquiry dashboard
+- [x] `FR-053` Admin query status tracking and internal notes
 - [ ] `FR-059` Protected admin layout and route authorization
 - [ ] `FR-060` Live KPI counters from SQL Server entities
 - [ ] `FR-061` Centralized admin navigation sidebar

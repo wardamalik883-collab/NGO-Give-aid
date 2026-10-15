@@ -43,18 +43,18 @@
                     </li>
                     <!-- Dropdown for secondary discovery modules -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Gallery" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Partners" ? "active" : "")" href="#" id="exploreDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Gallery" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Partners" || ViewContext.RouteData.Values["Controller"]?.ToString() == "Help" ? "active" : "")" href="#" id="exploreDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Explore
                         </a>
                         <ul class="dropdown-menu giveaid-dropdown-menu" aria-labelledby="exploreDropdown">
                             <li><a class="dropdown-item" asp-controller="Gallery" asp-action="Index">Photo Gallery</a></li>
                             <li><a class="dropdown-item" asp-controller="Partners" asp-action="Index">Affiliated NGOs &amp; Partners</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/Help">Help Centre &amp; FAQ</a></li>
+                            <li><a class="dropdown-item" asp-controller="Help" asp-action="Index">Help Centre &amp; FAQ</a></li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Contact" title="Send inquiries or feedback">Contact Us</a>
+                        <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Contact" ? "active" : "")" asp-controller="Contact" asp-action="Index" title="Send inquiries or feedback">Contact Us</a>
                     </li>
                 </ul>
 

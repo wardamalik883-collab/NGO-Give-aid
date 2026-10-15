@@ -54,6 +54,9 @@ builder.Services.AddScoped<DataSeedService>();
 // Register image upload service for NGO/Partner logo management (Task 10)
 builder.Services.AddScoped<ImageUploadService>();
 
+// Register email service for inquiry notifications and admin replies (Task 12)
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 // Add MVC services to the container.
 builder.Services.AddControllersWithViews();
 

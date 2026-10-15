@@ -209,10 +209,17 @@ namespace GiveAid.Web.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("AdminReply")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime?>("RepliedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SenderEmail")
                         .IsRequired()
@@ -246,6 +253,8 @@ namespace GiveAid.Web.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ContactQueries");
                 });
@@ -728,6 +737,16 @@ namespace GiveAid.Web.Migrations
                         .IsRequired();
 
                     b.Navigation("Ngo");
+                });
+
+            modelBuilder.Entity("GiveAid.Web.Models.ContactQuery", b =>
+                {
+                    b.HasOne("GiveAid.Web.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GiveAid.Web.Models.Donation", b =>

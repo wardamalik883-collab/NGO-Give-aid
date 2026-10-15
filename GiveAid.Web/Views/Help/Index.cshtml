@@ -1,0 +1,81 @@
+@model GiveAid.Web.ViewModels.HelpIndexViewModel
+@{
+    ViewData["Title"] = "Help Centre & FAQ";
+}
+
+<!-- Hero Section -->
+<section class="py-5 bg-light border-bottom">
+    <div class="container text-center">
+        <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill mb-2">Knowledge Base</span>
+        <h1 class="display-5 fw-bold text-dark mb-3">Frequently Asked Questions</h1>
+        <p class="lead text-muted mx-auto" style="max-width: 720px;">
+            Find quick answers to common questions about Give-AID, our welfare causes, volunteer initiatives, simulated donation testing, and inquiry tracking.
+        </p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <!-- Category Filter Pills -->
+    <div class="d-flex flex-wrap align-items-center justify-content-center gap-2 mb-5">
+        <a asp-action="Index" class="btn btn-sm rounded-pill px-3 @(string.IsNullOrEmpty(Model.ActiveCategory) ? "btn-giveaid-primary" : "btn-outline-secondary")">
+            All Questions
+        </a>
+        @foreach (var cat in Model.Categories)
+        {
+            <a asp-action="Index" asp-route-category="@cat"
+               class="btn btn-sm rounded-pill px-3 @(string.Equals(Model.ActiveCategory, cat, StringComparison.OrdinalIgnoreCase) ? "btn-giveaid-primary" : "btn-outline-secondary")">
+                @cat
+            </a>
+        }
+    </div>
+
+    <!-- FAQ Accordion (FR-049) -->
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="accordion giveaid-accordion shadow-sm" id="faqAccordion">
+                @for (int i = 0; i < Model.Faqs.Count; i++)
+                {
+                    var item = Model.Faqs[i];
+                    var isFirst = i == 0;
+                    <div class="accordion-item border mb-3 rounded overflow-hidden">
+                        <h2 class="accordion-header" id="heading-@item.Id">
+                            <button class="accordion-button @(isFirst ? "" : "collapsed") fw-bold text-dark" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#collapse-@item.Id"
+                                    aria-expanded="@(isFirst ? "true" : "false")" aria-controls="collapse-@item.Id">
+                                <span class="badge bg-primary-subtle text-primary me-3 small">@item.Category</span>
+                                @item.Question
+                            </button>
+                        </h2>
+                        <div id="collapse-@item.Id" class="accordion-collapse collapse @(isFirst ? "show" : "")"
+                             aria-labelledby="heading-@item.Id" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body text-secondary" style="line-height: 1.7;">
+                                @item.Answer
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Still Have Questions Banner -->
+            <div class="giveaid-card p-4 p-md-5 mt-5 text-center shadow-sm bg-light border">
+                <div class="mb-3">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--giveaid-primary)" stroke-width="1.8">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <h3 class="h4 fw-bold text-dark mb-2">Still Have Questions?</h3>
+                <p class="text-muted mx-auto mb-4" style="max-width: 520px;">
+                    Can't find what you're looking for? Reach out directly through our Contact form and an administrator will respond.
+                </p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a asp-controller="Contact" asp-action="Index" class="btn btn-giveaid-primary">
+                        Contact Support Team &rarr;
+                    </a>
+                    <a asp-controller="Causes" asp-action="Index" class="btn btn-giveaid-outline">
+                        Explore Causes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

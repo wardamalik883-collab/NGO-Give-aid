@@ -78,6 +78,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(pi => pi.ProgrammeId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // ContactQuery -> User: Optional relationship, SetNull on user deletion
+        modelBuilder.Entity<ContactQuery>()
+            .HasOne(q => q.User)
+            .WithMany()
+            .HasForeignKey(q => q.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // ======================================================================
         // Unique Indexes & Performance Optimizations
         // ======================================================================

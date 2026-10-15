@@ -1,0 +1,44 @@
+@model GiveAid.Web.Models.ContactQuery
+@{
+    ViewData["Title"] = $"Delete Inquiry #{Model.Id}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="mb-4">
+            <h1 class="h3 fw-bold text-danger mb-1">Confirm Deletion</h1>
+            <p class="text-muted">You are about to permanently remove this inquiry from the system.</p>
+        </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="giveaid-card p-4 border-danger shadow-sm">
+            <div class="mb-3">
+                <span class="badge bg-secondary-subtle text-secondary mb-2">Inquiry #@Model.Id &middot; @Model.Status</span>
+                <h4 class="fw-bold mb-1">@Model.Subject</h4>
+                <p class="text-muted small mb-0">From: <strong>@Model.SenderName</strong> (@Model.SenderEmail) &middot; @Model.SubmittedAt.ToString("dd MMM yyyy, h:mm tt")</p>
+            </div>
+
+            <div class="p-3 bg-light rounded border mb-3 text-secondary small" style="white-space: pre-line;">
+                @Model.Message
+            </div>
+
+            <div class="alert alert-warning small mb-0" role="alert">
+                <strong>Warning:</strong> This inquiry record and its audit history will be permanently deleted from the database. This action cannot be undone.
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-4">
+            <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">Yes, Delete Permanently</button>
+            </form>
+            <a asp-action="Index" class="btn btn-giveaid-outline">Cancel</a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,178 @@
+@model GiveAid.Web.ViewModels.AdminQueryReplyViewModel
+@{
+    ViewData["Title"] = $"Inquiry #{Model.QueryId} - {Model.Subject}";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <h1 class="h3 fw-bold text-dark mb-0">Inquiry #@Model.QueryId</h1>
+                    @switch (Model.CurrentStatus)
+                    {
+                        case "New":
+                            <span class="badge bg-warning-subtle text-warning fs-6">New</span>
+                            break;
+                        case "In Progress":
+                            <span class="badge bg-info-subtle text-info fs-6">In Progress</span>
+                            break;
+                        case "Answered":
+                            <span class="badge bg-success-subtle text-success fs-6">Answered</span>
+                            break;
+                        case "Closed":
+                            <span class="badge bg-secondary-subtle text-secondary fs-6">Closed</span>
+                            break;
+                        default:
+                            <span class="badge bg-light text-dark fs-6">@Model.CurrentStatus</span>
+                            break;
+                    }
+                </div>
+                <p class="text-muted mb-0">Submitted on @Model.SubmittedAt.ToString("dd MMMM yyyy, h:mm tt") UTC</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-action="Delete" asp-route-id="@Model.QueryId" class="btn btn-sm btn-outline-danger">Delete Inquiry</a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Inquiry Details Card -->
+        <div class="giveaid-card p-4 p-md-5 mb-4 shadow-sm">
+            <h3 class="h5 fw-bold text-dark border-bottom pb-2 mb-3">Sender &amp; Message Information</h3>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <span class="text-muted small d-block">Sender Name</span>
+                    <strong class="text-dark">@Model.SenderName</strong>
+                    @if (!string.IsNullOrEmpty(Model.UserId))
+                    {
+                        <span class="badge bg-primary-subtle text-primary small d-inline-block mt-1">Verified Member</span>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted small d-block">Email Address</span>
+                    <a href="mailto:@Model.SenderEmail" class="text-decoration-none">@Model.SenderEmail</a>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted small d-block">Phone Number</span>
+                    <span class="text-dark">@(string.IsNullOrEmpty(Model.SenderPhone) ? "Not provided" : Model.SenderPhone)</span>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <span class="text-muted small d-block mb-1">Subject</span>
+                <h4 class="h6 fw-bold text-dark">@Model.Subject</h4>
+            </div>
+
+            <div class="mb-2">
+                <span class="text-muted small d-block mb-2">Original Inquiry Message</span>
+                <div class="p-3 bg-light rounded border text-dark" style="white-space: pre-line; line-height: 1.7;">
+                    @Model.OriginalMessage
+                </div>
+            </div>
+        </div>
+
+        <!-- Official Administrator Reply Section (FR-053) -->
+        <div class="giveaid-card p-4 p-md-5 mb-4 shadow-sm">
+            <h3 class="h5 fw-bold text-dark border-bottom pb-2 mb-3">Official Administrator Reply</h3>
+
+            @if (!string.IsNullOrEmpty(Model.ExistingReply))
+            {
+                <div class="alert alert-success bg-success-subtle border-success mb-4 p-3 rounded">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <strong class="text-success d-flex align-items-center gap-1">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Reply Recorded
+                        </strong>
+                        <span class="text-muted small">
+                            @(Model.RepliedAt.HasValue ? Model.RepliedAt.Value.ToString("dd MMM yyyy, h:mm tt") + " UTC" : "")
+                        </span>
+                    </div>
+                    <p class="mb-0 text-dark" style="white-space: pre-line;">@Model.ExistingReply</p>
+                </div>
+            }
+
+            <form asp-action="Reply" asp-route-id="@Model.QueryId" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="QueryId" />
+
+                <div class="mb-3">
+                    <label asp-for="AdminReply" class="form-label fw-semibold">
+                        @(string.IsNullOrEmpty(Model.ExistingReply) ? "Compose Official Reply" : "Update Official Reply")
+                    </label>
+                    <textarea asp-for="AdminReply" class="form-control" rows="5" placeholder="Type your response to the inquirer here..."></textarea>
+                    <span asp-validation-for="AdminReply" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AdminNotes" class="form-label fw-semibold">Internal Operations Notes (Optional)</label>
+                    <input asp-for="AdminNotes" class="form-control" placeholder="Internal tracking notes (visible only to admins)..." />
+                    <span asp-validation-for="AdminNotes" class="text-danger small"></span>
+                </div>
+
+                <div class="form-check mb-4">
+                    <input asp-for="SendEmailNotification" class="form-check-input" type="checkbox" id="emailCheck" />
+                    <label class="form-check-label text-dark" for="emailCheck">
+                        Send email notification to <strong>@Model.SenderEmail</strong> (Uses configured SMTP or safe simulation logger)
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-giveaid-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    Save &amp; Mark as Answered
+                </button>
+            </form>
+        </div>
+
+        <!-- Quick Status Update Card -->
+        <div class="giveaid-card p-4 mb-4 shadow-sm">
+            <h4 class="h6 fw-bold text-dark text-uppercase tracking-wider mb-3">Update Resolution Status</h4>
+            <form asp-action="UpdateStatus" asp-route-id="@Model.QueryId" method="post" class="row g-3 align-items-end">
+                @Html.AntiForgeryToken()
+                <div class="col-md-5">
+                    <label class="form-label text-muted small">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="New" selected="@(Model.CurrentStatus == "New")">New</option>
+                        <option value="In Progress" selected="@(Model.CurrentStatus == "In Progress")">In Progress</option>
+                        <option value="Answered" selected="@(Model.CurrentStatus == "Answered")">Answered</option>
+                        <option value="Closed" selected="@(Model.CurrentStatus == "Closed")">Closed</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label text-muted small">Internal Notes</label>
+                    <input type="text" name="adminNotes" class="form-control" value="@Model.AdminNotes" placeholder="Update notes..." />
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-secondary w-100">Update</button>
+                </div>
+            </form>
+        </div>
+
+        <div>
+            <a asp-action="Index" class="btn btn-giveaid-outline btn-sm">&larr; Back to Inquiries Queue</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

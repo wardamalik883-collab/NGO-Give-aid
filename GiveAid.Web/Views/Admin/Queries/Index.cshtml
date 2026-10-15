@@ -1,0 +1,194 @@
+@model GiveAid.Web.ViewModels.AdminQueryListViewModel
+@{
+    ViewData["Title"] = "Manage Inquiries";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Inquiry &amp; Query Management</h1>
+        <p class="text-muted mb-0">Review visitor inquiries, dispatch official replies, and track resolution statuses.</p>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- KPI Counters Bar (FR-052 / FR-060) -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3 col-xl">
+        <a asp-action="Index" asp-route-status="All" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-primary h-100 hover-shadow transition">
+                <span class="text-muted small d-block">Total Inquiries</span>
+                <span class="fs-4 fw-bold text-dark">@Model.TotalCount</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 col-xl">
+        <a asp-action="Index" asp-route-status="New" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-warning h-100 hover-shadow transition">
+                <span class="text-muted small d-block">New Unread</span>
+                <span class="fs-4 fw-bold text-warning">@Model.NewCount</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 col-xl">
+        <a asp-action="Index" asp-route-status="In Progress" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-info h-100 hover-shadow transition">
+                <span class="text-muted small d-block">In Progress</span>
+                <span class="fs-4 fw-bold text-info">@Model.InProgressCount</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 col-xl">
+        <a asp-action="Index" asp-route-status="Answered" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-success h-100 hover-shadow transition">
+                <span class="text-muted small d-block">Answered</span>
+                <span class="fs-4 fw-bold text-success">@Model.AnsweredCount</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3 col-xl">
+        <a asp-action="Index" asp-route-status="Closed" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-secondary h-100 hover-shadow transition">
+                <span class="text-muted small d-block">Closed</span>
+                <span class="fs-4 fw-bold text-secondary">@Model.ClosedCount</span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Filter Tabs -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a asp-action="Index" asp-route-status="All"
+       class="btn btn-sm rounded-pill px-3 @(string.IsNullOrEmpty(Model.SelectedStatus) || Model.SelectedStatus.Equals("All", StringComparison.OrdinalIgnoreCase) ? "btn-giveaid-primary" : "btn-outline-secondary")">
+        All (@Model.TotalCount)
+    </a>
+    <a asp-action="Index" asp-route-status="New"
+       class="btn btn-sm rounded-pill px-3 @(string.Equals(Model.SelectedStatus, "New", StringComparison.OrdinalIgnoreCase) ? "btn-warning text-dark" : "btn-outline-secondary")">
+        New (@Model.NewCount)
+    </a>
+    <a asp-action="Index" asp-route-status="In Progress"
+       class="btn btn-sm rounded-pill px-3 @(string.Equals(Model.SelectedStatus, "In Progress", StringComparison.OrdinalIgnoreCase) ? "btn-info text-dark" : "btn-outline-secondary")">
+        In Progress (@Model.InProgressCount)
+    </a>
+    <a asp-action="Index" asp-route-status="Answered"
+       class="btn btn-sm rounded-pill px-3 @(string.Equals(Model.SelectedStatus, "Answered", StringComparison.OrdinalIgnoreCase) ? "btn-success" : "btn-outline-secondary")">
+        Answered (@Model.AnsweredCount)
+    </a>
+    <a asp-action="Index" asp-route-status="Closed"
+       class="btn btn-sm rounded-pill px-3 @(string.Equals(Model.SelectedStatus, "Closed", StringComparison.OrdinalIgnoreCase) ? "btn-secondary" : "btn-outline-secondary")">
+        Closed (@Model.ClosedCount)
+    </a>
+</div>
+
+@if (!Model.Queries.Any())
+{
+    <div class="giveaid-card p-5 text-center">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--giveaid-text-light)" stroke-width="1.5" class="mb-3">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <h5 class="text-muted">No Inquiries Found</h5>
+        <p class="text-muted">
+            @(string.IsNullOrEmpty(Model.SelectedStatus) || Model.SelectedStatus == "All"
+                ? "No queries have been submitted through the Contact form yet."
+                : $"There are currently no inquiries in the '{Model.SelectedStatus}' status queue.")
+        </p>
+        @if (!string.IsNullOrEmpty(Model.SelectedStatus) && Model.SelectedStatus != "All")
+        {
+            <a asp-action="Index" class="btn btn-giveaid-outline btn-sm">View All Inquiries</a>
+        }
+    </div>
+}
+else
+{
+    <div class="giveaid-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 60px;">#ID</th>
+                        <th>Sender &amp; Contact</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Date Submitted</th>
+                        <th class="text-end" style="width: 170px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var q in Model.Queries)
+                    {
+                        <tr>
+                            <td class="fw-semibold text-muted">#@q.Id</td>
+                            <td>
+                                <strong class="d-block text-dark">@q.SenderName</strong>
+                                <span class="text-muted small">@q.SenderEmail</span>
+                                @if (!string.IsNullOrEmpty(q.UserId))
+                                {
+                                    <span class="badge bg-light text-primary border small ms-1" title="Inquiry submitted by a registered member">
+                                        Member
+                                    </span>
+                                }
+                            </td>
+                            <td>
+                                <span class="d-block text-dark fw-semibold text-truncate" style="max-width: 280px;" title="@q.Subject">
+                                    @q.Subject
+                                </span>
+                                <span class="text-muted small text-truncate d-block" style="max-width: 280px;" title="@q.Message">
+                                    @q.Message
+                                </span>
+                            </td>
+                            <td>
+                                @switch (q.Status)
+                                {
+                                    case "New":
+                                        <span class="badge bg-warning-subtle text-warning fw-semibold">New</span>
+                                        break;
+                                    case "In Progress":
+                                        <span class="badge bg-info-subtle text-info fw-semibold">In Progress</span>
+                                        break;
+                                    case "Answered":
+                                        <span class="badge bg-success-subtle text-success fw-semibold">Answered</span>
+                                        break;
+                                    case "Closed":
+                                        <span class="badge bg-secondary-subtle text-secondary fw-semibold">Closed</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-light text-dark">@q.Status</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <span class="text-dark small fw-semibold">@q.SubmittedAt.ToString("dd MMM yyyy")</span>
+                                <span class="d-block text-muted small">@q.SubmittedAt.ToString("h:mm tt")</span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@q.Id" class="btn btn-sm btn-outline-primary" title="Review & Reply">
+                                    Review &rarr;
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@q.Id" class="btn btn-sm btn-outline-danger" title="Delete Inquiry">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+<div class="mt-4">
+    <a asp-controller="Admin" asp-action="Index" class="btn btn-giveaid-outline btn-sm">&larr; Back to Admin Dashboard</a>
+</div>
