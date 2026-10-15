@@ -1,0 +1,173 @@
+@model UserDonationHistoryViewModel
+@{
+    ViewData["Title"] = "My Donation History — Give-AID";
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <div>
+            <span class="section-tag">Donor Portal</span>
+            <h1 class="h2 fw-bold text-dark mb-1">My Contribution History</h1>
+            <p class="text-muted mb-0">Record of all your simulated donations and supported humanitarian campaigns.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-giveaid-donate">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Make a New Donation
+        </a>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-4">
+            <div class="giveaid-card p-4 border-start border-primary border-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase">Total Contributed</div>
+                        <div class="h3 fw-bold text-teal mb-0">PKR @Model.TotalContributed.ToString("N0")</div>
+                    </div>
+                    <div class="auth-icon-circle mb-0" style="width: 48px; height: 48px;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">All completed demo contributions</div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-4">
+            <div class="giveaid-card p-4 border-start border-success border-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase">Successful Donations</div>
+                        <div class="h3 fw-bold text-dark mb-0">@Model.SuccessfulDonationsCount <span class="small text-muted fs-6 fw-normal">/ @Model.TotalDonationsCount total</span></div>
+                    </div>
+                    <div class="auth-icon-circle mb-0" style="width: 48px; height: 48px; background-color: #dcfce7; color: #15803d;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">Verified test transactions</div>
+            </div>
+        </div>
+
+        <div class="col-sm-12 col-lg-4">
+            <div class="giveaid-card p-4 border-start border-info border-4">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-semibold text-uppercase">Causes Supported</div>
+                        <div class="h3 fw-bold text-dark mb-0">@Model.UniqueCausesSupportedCount</div>
+                    </div>
+                    <div class="auth-icon-circle mb-0" style="width: 48px; height: 48px; background-color: #e0f2fe; color: #0369a1;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">Unique campaigns empowered</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donations List -->
+    @if (!Model.Donations.Any())
+    {
+        <!-- Empty State -->
+        <div class="giveaid-card p-5 text-center my-4">
+            <div class="auth-icon-circle mx-auto mb-3" style="width: 64px; height: 64px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">No Donations Recorded Yet</h4>
+            <p class="text-muted mx-auto mb-4" style="max-width: 450px;">
+                You haven't initiated any demo donations yet. Explore our verified active causes and test the donation workflow.
+            </p>
+            <a asp-action="Index" class="btn btn-giveaid-donate px-4">
+                Explore Causes &amp; Donate Now
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="giveaid-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Reference</th>
+                            <th>Target Cause</th>
+                            <th>Amount</th>
+                            <th>Date (UTC)</th>
+                            <th>Status</th>
+                            <th class="text-end" style="min-width: 130px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Donations)
+                        {
+                            bool isCompleted = string.Equals(item.PaymentStatus, "Completed", StringComparison.OrdinalIgnoreCase)
+                                            || string.Equals(item.PaymentStatus, "Successful", StringComparison.OrdinalIgnoreCase);
+                            <tr>
+                                <td>
+                                    <span class="font-monospace fw-bold text-dark small">@item.TransactionReference</span>
+                                </td>
+                                <td>
+                                    @if (item.Cause != null)
+                                    {
+                                        <div class="fw-semibold text-dark">@item.Cause.Title</div>
+                                        <small class="text-muted">@(item.Cause.Ngo?.Name ?? "Give-AID Partner NGO")</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">General Cause</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="fw-bold @(isCompleted ? "text-teal" : "text-danger")">
+                                        PKR @item.Amount.ToString("N0")
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-muted small">@item.DonationDate.ToString("dd MMM yyyy, HH:mm")</span>
+                                </td>
+                                <td>
+                                    @if (isCompleted)
+                                    {
+                                        <span class="badge bg-success-subtle text-success">Completed</span>
+                                    }
+                                    else if (string.Equals(item.PaymentStatus, "Failed", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger">Failed</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning">@item.PaymentStatus</span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Receipt" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="View Digital Receipt">
+                                        View Receipt
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <div class="mt-4 text-center">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-giveaid-outline">
+            &larr; Back to Home
+        </a>
+    </div>
+</div>

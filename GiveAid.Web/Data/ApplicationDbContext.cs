@@ -64,6 +64,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(d => d.CauseId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Donation -> User: Optional relationship, SetNull on user deletion to preserve financial audit trail
+        modelBuilder.Entity<Donation>()
+            .HasOne(d => d.User)
+            .WithMany()
+            .HasForeignKey(d => d.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // GalleryImage -> Programme: SetNull so gallery images remain preserved if programme is deleted
         modelBuilder.Entity<GalleryImage>()
             .HasOne(g => g.Programme)
@@ -93,6 +100,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<Donation>()
             .HasIndex(d => d.TransactionReference)
             .IsUnique();
+
+        // Index on Donation.UserId for efficient user history lookup
+        modelBuilder.Entity<Donation>()
+            .HasIndex(d => d.UserId);
 
         // AboutSection key must be unique
         modelBuilder.Entity<AboutSection>()

@@ -1,0 +1,183 @@
+@model SimulatedPaymentViewModel
+@{
+    ViewData["Title"] = "Simulated Payment Step — Give-AID";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <!-- Demo Header -->
+            <div class="text-center mb-4">
+                <span class="badge bg-warning-subtle text-warning fw-bold px-3 py-2 rounded-pill small mb-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    Interactive Demo Environment
+                </span>
+                <h1 class="h2 fw-bold text-dark mb-1">Simulated Payment Processing</h1>
+                <p class="text-muted small mb-0">Confirm donation details and select the test outcome below.</p>
+            </div>
+
+            <!-- Prominent Demo Notice (Section 7 Requirement) -->
+            <div class="alert alert-warning border-warning shadow-sm rounded-3 p-3 mb-4" role="alert">
+                <div class="d-flex align-items-start gap-3">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" class="flex-shrink-0 mt-1">
+                        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">Demo Payment — No real money will be transferred.</h6>
+                        <p class="mb-0 text-muted small">
+                            This simulated gateway allows paired testing of successful and failed transaction flows. 
+                            <strong>Do not enter real credit card numbers, CVVs, ATM PINs, or banking passwords.</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donation Summary Card -->
+            <div class="bg-white border rounded-3 p-4 p-md-5 shadow-sm mb-4">
+                <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">Donation Summary</h5>
+
+                <div class="p-3 bg-light rounded-3 mb-4">
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted small">Target Cause:</span>
+                        <span class="fw-bold text-dark text-end">@Model.CauseTitle</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted small">Partner NGO:</span>
+                        <span class="text-dark small">@Model.NgoName</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted small">Donation Amount:</span>
+                        <span class="h4 fw-bold text-teal mb-0">PKR @Model.Amount.ToString("N0")</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <span class="text-muted small">Donor Name:</span>
+                        <span class="text-dark small">@Model.DonorName</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-muted small">Receipt Email:</span>
+                        <span class="text-dark small">@Model.DonorEmail</span>
+                    </div>
+                </div>
+
+                <!-- Simulated Payment Execution Form -->
+                <form asp-controller="Donate" asp-action="ProcessPayment" method="post" id="simulatedPaymentForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="CauseId" />
+                    <input type="hidden" asp-for="CauseTitle" />
+                    <input type="hidden" asp-for="NgoName" />
+                    <input type="hidden" asp-for="Amount" />
+                    <input type="hidden" asp-for="DonorName" />
+                    <input type="hidden" asp-for="DonorEmail" />
+                    <input type="hidden" asp-for="DonorPhone" />
+                    <input type="hidden" asp-for="IdempotencyToken" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 small rounded-3 mb-3"></div>
+
+                    <!-- Deterministic Outcome Selection (Section 7 Requirement) -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-dark mb-2">
+                            Select Deterministic Test Outcome:
+                        </label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="p-3 border rounded-3 w-100 d-flex align-items-start gap-2 cursor-pointer bg-light test-outcome-card active-outcome" for="outcomeSuccess" style="cursor: pointer;">
+                                    <input type="radio" asp-for="SimulatedOutcome" value="Success" id="outcomeSuccess" class="form-check-input mt-1" checked />
+                                    <div>
+                                        <div class="fw-bold text-success d-flex align-items-center gap-1">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                            Simulate Success
+                                        </div>
+                                        <span class="small text-muted">Test happy path: marks donation completed, updates cause funding, generates receipt.</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="p-3 border rounded-3 w-100 d-flex align-items-start gap-2 cursor-pointer bg-light test-outcome-card" for="outcomeFailure" style="cursor: pointer;">
+                                    <input type="radio" asp-for="SimulatedOutcome" value="Failure" id="outcomeFailure" class="form-check-input mt-1" />
+                                    <div>
+                                        <div class="fw-bold text-danger d-flex align-items-center gap-1">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                                            </svg>
+                                            Simulate Failure
+                                        </div>
+                                        <span class="small text-muted">Test error handling: simulates decline/rejection, records failure status in audit log.</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Optional simulation failure note -->
+                    <div class="mb-4" id="failureNotesContainer" style="display: none;">
+                        <label asp-for="SimulatedNotes" class="form-label small text-muted">Simulation Reason / Note (Optional)</label>
+                        <input asp-for="SimulatedNotes" class="form-control form-control-sm" placeholder="e.g., Demo card declined by test network" />
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-column gap-2 mt-4">
+                        <button type="submit" class="btn btn-giveaid-donate w-100 py-3 fs-5 justify-content-center" id="btnConfirmPayment">
+                            <span>Execute Demo Payment</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button>
+                        <a asp-action="Index" asp-route-causeId="@Model.CauseId" class="btn btn-giveaid-outline justify-content-center">
+                            &larr; Back / Modify Details
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Security Footer Note -->
+            <div class="text-center text-muted small">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Secure Demo Simulation &bull; Protected by Give-AID Platform Authentication
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const radioSuccess = document.getElementById('outcomeSuccess');
+            const radioFailure = document.getElementById('outcomeFailure');
+            const notesContainer = document.getElementById('failureNotesContainer');
+            const submitBtn = document.getElementById('btnConfirmPayment');
+
+            function updateUI() {
+                if (radioFailure && radioFailure.checked) {
+                    notesContainer.style.display = 'block';
+                    submitBtn.classList.remove('btn-giveaid-donate');
+                    submitBtn.classList.add('btn-danger');
+                    submitBtn.innerHTML = '<span>Execute Failed Payment Simulation</span>';
+                } else {
+                    notesContainer.style.display = 'none';
+                    submitBtn.classList.remove('btn-danger');
+                    submitBtn.classList.add('btn-giveaid-donate');
+                    submitBtn.innerHTML = '<span>Execute Demo Payment (Success)</span>';
+                }
+            }
+
+            if (radioSuccess && radioFailure) {
+                radioSuccess.addEventListener('change', updateUI);
+                radioFailure.addEventListener('change', updateUI);
+            }
+            updateUI();
+        });
+    </script>
+}

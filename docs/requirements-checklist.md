@@ -41,12 +41,12 @@ This checklist tracks the implementation status of all confirmed requirements ac
 - [x] `FR-051` Server-side validation for contact submissions
 
 ### 1.2 User Registration & Member Workflows
-- [ ] `FR-020` Public donation initiation form
-- [ ] `FR-021` Guest and authenticated donation support
-- [ ] `FR-022` Deterministic simulated payment processing
-- [ ] `FR-023` Zero sensitive payment card data storage
-- [ ] `FR-024` Digital donation receipt generation
-- [ ] `FR-025` Authenticated user personal donation history
+- [x] `FR-020` Public donation initiation form
+- [x] `FR-021` Guest and authenticated donation support
+- [x] `FR-022` Deterministic simulated payment processing
+- [x] `FR-023` Zero sensitive payment card data storage
+- [x] `FR-024` Digital donation receipt generation
+- [x] `FR-025` Authenticated user personal donation history
 - [ ] `FR-027` User account registration
 - [ ] `FR-028` Secure user login via ASP.NET Core Identity
 - [ ] `FR-029` User logout with session invalidation
@@ -60,7 +60,7 @@ This checklist tracks the implementation status of all confirmed requirements ac
 ### 1.3 Administration Back-Office (`/Admin`)
 - [ ] `FR-018` Admin CRUD for charitable causes
 - [ ] `FR-019` Cause image upload sanitization & validation
-- [ ] `FR-026` Admin donation search and transaction audit
+- [x] `FR-026` Admin donation search and transaction audit
 - [ ] `FR-030` Role-based authorization enforcement (`Admin` vs `User`)
 - [ ] `FR-031` Automated admin account and role seeding
 - [x] `FR-035` Admin CRUD for affiliated NGOs

@@ -1,0 +1,177 @@
+@model GiveAid.Web.Models.Donation
+@{
+    ViewData["Title"] = $"Donation Audit — {Model.TransactionReference}";
+    bool isCompleted = string.Equals(Model.PaymentStatus, "Completed", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(Model.PaymentStatus, "Successful", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-1 rounded-pill small mb-2">Admin Audit Inspection</span>
+                <h1 class="h3 fw-bold text-dark mb-1">Transaction Details</h1>
+                <p class="text-muted mb-0">Reference: <span class="font-monospace fw-bold text-dark">@Model.TransactionReference</span></p>
+            </div>
+            <div class="d-flex gap-2">
+                <a asp-controller="Donate" asp-action="Receipt" asp-route-id="@Model.Id" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    Public Receipt View
+                </a>
+                <a asp-action="Index" class="btn btn-sm btn-giveaid-outline">&larr; Back to List</a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <!-- Details Grid Card -->
+        <div class="giveaid-card p-4 p-md-5 mb-4">
+            <div class="row g-4">
+                <!-- Transaction Info -->
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">Financial &amp; System Information</h5>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Transaction Reference</label>
+                        <div class="font-monospace fw-bold text-dark">@Model.TransactionReference</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Donated Amount</label>
+                        <div class="h4 fw-bold @(isCompleted ? "text-teal" : "text-danger") mb-0">
+                            PKR @Model.Amount.ToString("N0")
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Payment Status</label>
+                        <div>
+                            @if (isCompleted)
+                            {
+                                <span class="badge bg-success-subtle text-success fs-6">Completed / Successful</span>
+                            }
+                            else if (string.Equals(Model.PaymentStatus, "Failed", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-danger-subtle text-danger fs-6">Failed / Declined</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning-subtle text-warning fs-6">@Model.PaymentStatus</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Simulated Demo Flag</label>
+                        <div>
+                            <span class="badge bg-info-subtle text-info">Simulated Demo Transaction (No real funds)</span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Created Date (UTC)</label>
+                        <div class="text-dark small">@Model.DonationDate.ToString("dd MMMM yyyy, HH:mm:ss 'UTC'")</div>
+                    </div>
+                    @if (Model.UpdatedAt.HasValue)
+                    {
+                        <div class="mb-3">
+                            <label class="text-muted small mb-0">Last Updated (UTC)</label>
+                            <div class="text-dark small">@Model.UpdatedAt.Value.ToString("dd MMMM yyyy, HH:mm:ss 'UTC'")</div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Donor & Cause Info -->
+                <div class="col-md-6">
+                    <h5 class="fw-bold text-dark mb-3 border-bottom pb-2">Donor &amp; Target Campaign</h5>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Donor Full Name</label>
+                        <div class="fw-semibold text-dark">@Model.DonorName</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Donor Email Address</label>
+                        <div><a href="mailto:@Model.DonorEmail">@Model.DonorEmail</a></div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Donor Phone Number</label>
+                        <div class="text-dark">@(Model.DonorPhone ?? "Not provided")</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Associated User Account</label>
+                        <div>
+                            @if (Model.User != null)
+                            {
+                                <span class="badge bg-primary-subtle text-primary">@Model.User.FullName (@Model.User.Email)</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Not linked to a user profile</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small mb-0">Target Charitable Cause</label>
+                        <div class="fw-semibold text-dark">@(Model.Cause?.Title ?? "—")</div>
+                        <small class="text-muted">Organizing NGO: @(Model.Cause?.Ngo?.Name ?? "—")</small>
+                    </div>
+                </div>
+
+                <!-- Simulation Notes & Audit Trail -->
+                <div class="col-12 pt-3 border-top">
+                    <label class="text-muted small mb-1">Simulated Gateway Notes &amp; Audit Trail</label>
+                    <div class="p-3 bg-light rounded-3 text-dark small font-monospace">
+                        @(Model.PaymentNotes ?? "No simulation notes logged.")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Administrative Status Adjustment -->
+        <div class="giveaid-card p-4 mb-4 border-warning border-start border-4">
+            <h5 class="fw-bold text-dark mb-2">Administrative Status Management</h5>
+            <p class="text-muted small mb-3">
+                Adjust donation status for test reconciliation. Changes will adjust the campaign's current raised amount automatically.
+            </p>
+
+            <form asp-action="UpdateStatus" method="post" class="row g-3 align-items-end">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+
+                <div class="col-md-4">
+                    <label class="form-label small fw-semibold">New Payment Status</label>
+                    <select name="newStatus" class="form-select form-select-sm">
+                        <option value="Completed" selected="@(Model.PaymentStatus == "Completed")">Completed (Successful)</option>
+                        <option value="Failed" selected="@(Model.PaymentStatus == "Failed")">Failed</option>
+                        <option value="Pending" selected="@(Model.PaymentStatus == "Pending")">Pending</option>
+                    </select>
+                </div>
+
+                <div class="col-md-5">
+                    <label class="form-label small fw-semibold">Audit Note</label>
+                    <input type="text" name="adminNotes" class="form-control form-control-sm" placeholder="Reason for status change..." />
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-warning btn-sm w-100">Update Status</button>
+                </div>
+            </form>
+        </div>
+
+        <div>
+            <a asp-action="Index" class="btn btn-giveaid-outline btn-sm">&larr; Back to Donation List</a>
+        </div>
+    </div>
+</div>

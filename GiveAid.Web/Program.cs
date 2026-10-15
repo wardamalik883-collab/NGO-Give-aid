@@ -57,6 +57,12 @@ builder.Services.AddScoped<ImageUploadService>();
 // Register email service for inquiry notifications and admin replies (Task 12)
 builder.Services.AddScoped<IEmailService, EmailService>();
 
+// Register memory cache for idempotency protection (Task 13)
+builder.Services.AddMemoryCache();
+
+// Register simulated payment service for safe demo donations (Task 13)
+builder.Services.AddScoped<ISimulatedPaymentService, SimulatedPaymentService>();
+
 // Add MVC services to the container.
 builder.Services.AddControllersWithViews();
 

@@ -62,4 +62,36 @@ public class Donation
     [StringLength(450)]
     [Display(Name = "Registered User ID")]
     public string? UserId { get; set; }
+
+    [ForeignKey("UserId")]
+    public ApplicationUser? User { get; set; }
+
+    [Display(Name = "Updated Date (UTC)")]
+    public DateTime? UpdatedAt { get; set; }
+
+    [StringLength(500)]
+    [Display(Name = "Simulated Payment Notes")]
+    public string? PaymentNotes { get; set; }
+
+    // Property aliases for roadmap and conventions
+    [NotMapped]
+    public string Reference
+    {
+        get => TransactionReference;
+        set => TransactionReference = value;
+    }
+
+    [NotMapped]
+    public string Status
+    {
+        get => PaymentStatus;
+        set => PaymentStatus = value;
+    }
+
+    [NotMapped]
+    public DateTime CreatedAt
+    {
+        get => DonationDate;
+        set => DonationDate = value;
+    }
 }

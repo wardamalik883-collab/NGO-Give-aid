@@ -1,12 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using GiveAid.Web.Models;
 
 namespace GiveAid.Web.ViewModels;
 
 /// <summary>
 /// ViewModel for the public donation form.
 /// Applies strict server-side validation rules in accordance with project requirements.
-/// Task 09 scope: UI and form validation only. Payment processing handled in Task 13.
+/// Real credit card numbers or credentials are NEVER collected or stored.
 /// </summary>
 public class DonationFormViewModel
 {
@@ -46,8 +47,102 @@ public class DonationFormViewModel
 }
 
 /// <summary>
-/// ViewModel presenting the validated donation review/confirmation state.
-/// Clarifies that actual payment processing will occur in Task 13.
+/// ViewModel representing the simulated demo payment step.
+/// Deterministic outcomes allow clear testing of success and failure without real financial risk.
+/// </summary>
+public class SimulatedPaymentViewModel
+{
+    [Required]
+    public int CauseId { get; set; }
+
+    public string CauseTitle { get; set; } = string.Empty;
+    public string NgoName { get; set; } = string.Empty;
+
+    [Required]
+    [Range(1, 10000000)]
+    public decimal Amount { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string DonorName { get; set; } = string.Empty;
+
+    [Required]
+    [EmailAddress]
+    [StringLength(100)]
+    public string DonorEmail { get; set; } = string.Empty;
+
+    public string? DonorPhone { get; set; }
+
+    /// <summary>
+    /// Explicit deterministic test outcome: "Success" or "Failure".
+    /// </summary>
+    [Required]
+    public string SimulatedOutcome { get; set; } = "Success";
+
+    /// <summary>
+    /// Optional failure simulation reason or test notes.
+    /// </summary>
+    public string? SimulatedNotes { get; set; }
+
+    /// <summary>
+    /// Unique token to prevent duplicate form submission.
+    /// </summary>
+    public string IdempotencyToken { get; set; } = Guid.NewGuid().ToString("N");
+}
+
+/// <summary>
+/// ViewModel for displaying donation receipt / confirmation.
+/// </summary>
+public class DonationReceiptViewModel
+{
+    public int DonationId { get; set; }
+    public string TransactionReference { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public DateTime DonationDate { get; set; }
+    public string PaymentStatus { get; set; } = string.Empty;
+    public bool IsSimulated { get; set; } = true;
+    public int CauseId { get; set; }
+    public string CauseTitle { get; set; } = string.Empty;
+    public string NgoName { get; set; } = string.Empty;
+    public string DonorName { get; set; } = string.Empty;
+    public string DonorEmail { get; set; } = string.Empty;
+    public string? DonorPhone { get; set; }
+    public string? PaymentNotes { get; set; }
+    public bool IsAdminView { get; set; } = false;
+    public bool IsSuccessful => string.Equals(PaymentStatus, "Completed", StringComparison.OrdinalIgnoreCase)
+                             || string.Equals(PaymentStatus, "Successful", StringComparison.OrdinalIgnoreCase);
+}
+
+/// <summary>
+/// ViewModel for authenticated user donation history page.
+/// </summary>
+public class UserDonationHistoryViewModel
+{
+    public List<Donation> Donations { get; set; } = new();
+    public decimal TotalContributed { get; set; }
+    public int TotalDonationsCount { get; set; }
+    public int SuccessfulDonationsCount { get; set; }
+    public int UniqueCausesSupportedCount { get; set; }
+}
+
+/// <summary>
+/// ViewModel for administrator donation management list.
+/// </summary>
+public class AdminDonationListViewModel
+{
+    public List<Donation> Donations { get; set; } = new();
+    public string? StatusFilter { get; set; }
+    public int? CauseFilter { get; set; }
+    public string? SearchQuery { get; set; }
+    public decimal TotalAmountRaised { get; set; }
+    public int TotalCount { get; set; }
+    public int SuccessfulCount { get; set; }
+    public int FailedCount { get; set; }
+    public List<SelectListItem> CausesList { get; set; } = new();
+}
+
+/// <summary>
+/// Preserved for backward compatibility from Task 09 review state.
 /// </summary>
 public class DonationConfirmationViewModel
 {

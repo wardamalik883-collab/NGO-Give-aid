@@ -294,6 +294,10 @@ namespace GiveAid.Web.Migrations
                     b.Property<bool>("IsSimulated")
                         .HasColumnType("bit");
 
+                    b.Property<string>("PaymentNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("PaymentStatus")
                         .IsRequired()
                         .HasMaxLength(25)
@@ -303,6 +307,9 @@ namespace GiveAid.Web.Migrations
                         .IsRequired()
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .HasMaxLength(450)
@@ -314,6 +321,8 @@ namespace GiveAid.Web.Migrations
 
                     b.HasIndex("TransactionReference")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Donations");
                 });
@@ -757,7 +766,14 @@ namespace GiveAid.Web.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("GiveAid.Web.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.Navigation("Cause");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GiveAid.Web.Models.GalleryImage", b =>

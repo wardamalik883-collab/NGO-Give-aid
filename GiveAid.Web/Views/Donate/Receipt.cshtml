@@ -1,0 +1,152 @@
+@model DonationReceiptViewModel
+@{
+    ViewData["Title"] = Model.IsSuccessful ? "Donation Receipt — Give-AID" : "Payment Simulation Failed — Give-AID";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            <div class="bg-white border rounded-3 p-4 p-md-5 shadow-sm text-start" id="printableReceipt">
+
+                @if (Model.IsSuccessful)
+                {
+                    <!-- Success Status Header -->
+                    <div class="text-center mb-4">
+                        <div class="auth-icon-circle mx-auto mb-3" style="width: 64px; height: 64px; background-color: #dcfce7; color: #15803d;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <span class="badge bg-success-subtle text-success fw-bold px-3 py-1 rounded-pill small mb-2">Simulated Payment Succeeded</span>
+                        <h1 class="h3 fw-bold text-dark mb-1">Donation Receipt</h1>
+                        <p class="text-muted small mb-0">Your demo contribution has been logged in the platform ledger.</p>
+                    </div>
+
+                    <!-- Clear Demo Notice (Section 9 Requirement) -->
+                    <div class="alert alert-success border-success-subtle d-flex align-items-center gap-2 small rounded-3 mb-4" role="status">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-success flex-shrink-0">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <div>
+                            <strong>Demo Confirmation:</strong> Your demo donation has been recorded successfully. No real payment was processed.
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <!-- Failure Status Header -->
+                    <div class="text-center mb-4">
+                        <div class="auth-icon-circle mx-auto mb-3" style="width: 64px; height: 64px; background-color: #fee2e2; color: #b91c1c;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </div>
+                        <span class="badge bg-danger-subtle text-danger fw-bold px-3 py-1 rounded-pill small mb-2">Simulated Payment Failed</span>
+                        <h1 class="h3 fw-bold text-dark mb-1">Payment Unsuccessful</h1>
+                        <p class="text-muted small mb-0">The simulated test payment was declined or could not be completed.</p>
+                    </div>
+
+                    <!-- Clear Failure Demo Notice (Section 9 Requirement) -->
+                    <div class="alert alert-danger border-danger-subtle d-flex align-items-center gap-2 small rounded-3 mb-4" role="status">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-danger flex-shrink-0">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <div>
+                            <strong>Demo Test Result:</strong> The demo payment was not successful. No money was charged or transferred.
+                        </div>
+                    </div>
+                }
+
+                <!-- Receipt Table Details -->
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Transaction Reference:</span>
+                        <span class="fw-bold text-dark font-monospace small">@Model.TransactionReference</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Target Cause:</span>
+                        <span class="fw-bold text-dark text-end">@Model.CauseTitle</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Organizing NGO:</span>
+                        <span class="text-dark small">@Model.NgoName</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Amount:</span>
+                        <span class="h4 fw-bold @(Model.IsSuccessful ? "text-teal" : "text-danger") mb-0">
+                            PKR @Model.Amount.ToString("N0")
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Date &amp; Time (UTC):</span>
+                        <span class="text-dark small">@Model.DonationDate.ToString("dd MMM yyyy, HH:mm 'UTC'")</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Donor Name:</span>
+                        <span class="text-dark small">@Model.DonorName</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Donor Email:</span>
+                        <span class="text-dark small">@Model.DonorEmail</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.DonorPhone))
+                    {
+                        <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                            <span class="text-muted small">Donor Phone:</span>
+                            <span class="text-dark small">@Model.DonorPhone</span>
+                        </div>
+                    }
+                    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                        <span class="text-muted small">Payment Status:</span>
+                        @if (Model.IsSuccessful)
+                        {
+                            <span class="badge bg-success">@Model.PaymentStatus</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">@Model.PaymentStatus</span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.PaymentNotes))
+                    {
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="text-muted small">Payment Notes:</span>
+                            <span class="text-muted small text-end" style="max-width: 60%;">@Model.PaymentNotes</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Action CTAs -->
+                <div class="d-flex flex-column gap-2 text-center">
+                    @if (!Model.IsSuccessful)
+                    {
+                        <a asp-action="Index" asp-route-causeId="@Model.CauseId" class="btn btn-giveaid-donate justify-content-center">
+                            Try Again
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Index" class="btn btn-giveaid-donate justify-content-center">
+                            Make Another Donation
+                        </a>
+                    }
+                    <a asp-action="History" class="btn btn-giveaid-outline justify-content-center">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        View My Donation History
+                    </a>
+                    <a asp-controller="Causes" asp-action="Index" class="btn btn-sm btn-link text-muted text-decoration-none">
+                        &larr; Browse All Causes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

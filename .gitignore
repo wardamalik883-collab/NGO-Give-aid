@@ -43,3 +43,6 @@ $RECYCLE.BIN/
 .DS_Store
 *.tmp
 *~
+*.log
+scratch/
+
