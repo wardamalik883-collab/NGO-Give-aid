@@ -82,9 +82,11 @@
                                 @if (User.IsInRole("Admin"))
                                 {
                                     <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Admin Dashboard</a></li>
+                                    <li><a class="dropdown-item" asp-controller="AdminInterests" asp-action="Index">Volunteer Requests</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                 }
                                 <li><a class="dropdown-item" asp-controller="Donate" asp-action="History">My Donations</a></li>
+                                <li><a class="dropdown-item" asp-controller="Programmes" asp-action="MyInterests">My Applications</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">

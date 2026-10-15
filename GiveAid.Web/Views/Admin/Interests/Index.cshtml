@@ -1,0 +1,222 @@
+@model GiveAid.Web.ViewModels.AdminInterestListViewModel
+@{
+    ViewData["Title"] = "Programme Interests & Volunteer Requests";
+}
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-dark mb-1">Volunteer &amp; Participation Requests</h1>
+        <p class="text-muted mb-0">Review community participant applications and volunteer enrollments for Give-AID programmes.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-giveaid-outline btn-sm">
+            &larr; Admin Dashboard
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- KPI Counters (FR-041 / FR-043) -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <a asp-action="Index" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-primary h-100 hover-shadow transition">
+                <span class="text-muted small d-block">Total Requests</span>
+                <span class="fs-4 fw-bold text-dark">@Model.TotalCount</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a asp-action="Index" asp-route-status="Pending" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-warning h-100 hover-shadow transition">
+                <span class="text-muted small d-block">Pending Review</span>
+                <span class="fs-4 fw-bold text-warning">@Model.PendingCount</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a asp-action="Index" asp-route-status="Approved" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-success h-100 hover-shadow transition">
+                <span class="text-muted small d-block">Approved</span>
+                <span class="fs-4 fw-bold text-success">@Model.ApprovedCount</span>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a asp-action="Index" asp-route-status="Rejected" class="text-decoration-none">
+            <div class="giveaid-card p-3 border-start border-4 border-danger h-100 hover-shadow transition">
+                <span class="text-muted small d-block">Rejected</span>
+                <span class="fs-4 fw-bold text-danger">@Model.RejectedCount</span>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Filters and Search Toolbar -->
+<div class="giveaid-card p-3 mb-4">
+    <form method="get" asp-action="Index" class="row g-2 align-items-center">
+        <div class="col-md-3">
+            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="" selected="@(string.IsNullOrEmpty(Model.StatusFilter))">All Statuses (@Model.TotalCount)</option>
+                <option value="Pending" selected="@(string.Equals(Model.StatusFilter, "Pending", StringComparison.OrdinalIgnoreCase))">Pending Review (@Model.PendingCount)</option>
+                <option value="Approved" selected="@(string.Equals(Model.StatusFilter, "Approved", StringComparison.OrdinalIgnoreCase))">Approved (@Model.ApprovedCount)</option>
+                <option value="Rejected" selected="@(string.Equals(Model.StatusFilter, "Rejected", StringComparison.OrdinalIgnoreCase))">Rejected (@Model.RejectedCount)</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select name="programmeId" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Welfare Programmes</option>
+                @foreach (var prog in Model.ProgrammesList)
+                {
+                    <option value="@prog.Value" selected="@prog.Selected">@prog.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="search" class="form-control form-control-sm" placeholder="Search applicant, email, phone..." value="@Model.SearchQuery" />
+        </div>
+        <div class="col-md-2 d-flex gap-1">
+            <button type="submit" class="btn btn-giveaid-primary btn-sm flex-grow-1">Search</button>
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm" title="Clear Filters">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Quick Status Pills -->
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <a asp-action="Index" asp-route-status="" asp-route-programmeId="@Model.ProgrammeFilter"
+       class="btn btn-sm rounded-pill px-3 @(string.IsNullOrEmpty(Model.StatusFilter) ? "btn-giveaid-primary" : "btn-outline-secondary")">
+        All (@Model.TotalCount)
+    </a>
+    <a asp-action="Index" asp-route-status="Pending" asp-route-programmeId="@Model.ProgrammeFilter"
+       class="btn btn-sm rounded-pill px-3 @(string.Equals(Model.StatusFilter, "Pending", StringComparison.OrdinalIgnoreCase) ? "btn-warning text-dark" : "btn-outline-secondary")">
+        Pending (@Model.PendingCount)
+    </a>
+    <a asp-action="Index" asp-route-status="Approved" asp-route-programmeId="@Model.ProgrammeFilter"
+       class="btn btn-sm rounded-pill px-3 @(string.Equals(Model.StatusFilter, "Approved", StringComparison.OrdinalIgnoreCase) ? "btn-success" : "btn-outline-secondary")">
+        Approved (@Model.ApprovedCount)
+    </a>
+    <a asp-action="Index" asp-route-status="Rejected" asp-route-programmeId="@Model.ProgrammeFilter"
+       class="btn btn-sm rounded-pill px-3 @(string.Equals(Model.StatusFilter, "Rejected", StringComparison.OrdinalIgnoreCase) ? "btn-danger" : "btn-outline-secondary")">
+        Rejected (@Model.RejectedCount)
+    </a>
+</div>
+
+<!-- Data Table -->
+@if (!Model.Interests.Any())
+{
+    <div class="giveaid-card p-5 text-center">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--giveaid-text-light)" stroke-width="1.5" class="mb-3">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+        <h5 class="text-muted">No Applications Found</h5>
+        <p class="text-muted">No participation requests matched your current filter criteria.</p>
+        <a asp-action="Index" class="btn btn-giveaid-outline btn-sm">Clear Filter</a>
+    </div>
+}
+else
+{
+    <div class="giveaid-card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 70px;">ID</th>
+                        <th>Applicant</th>
+                        <th>Programme</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th class="text-end" style="width: 140px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Interests)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-muted small">#@item.Id</span>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@item.ApplicantName</div>
+                                <div class="small text-muted">
+                                    <a href="mailto:@item.ApplicantEmail" class="text-decoration-none">@item.ApplicantEmail</a>
+                                    &middot; @item.ApplicantPhone
+                                </div>
+                                @if (item.UserId != null)
+                                {
+                                    <span class="badge bg-primary-subtle text-primary small mt-1">Verified Member</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-muted small mt-1">Guest</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@(item.Programme?.Title ?? "—")</div>
+                                <div class="small text-muted">
+                                    @(item.Programme != null ? item.Programme.EventDate.ToString("dd MMM yyyy") : "")
+                                    @if (!string.IsNullOrEmpty(item.Programme?.Location))
+                                    {
+                                        <span>&middot; @item.Programme.Location</span>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                @if (string.Equals(item.InterestType, "Volunteer", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    <span class="badge bg-primary-subtle text-primary">Volunteer</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-info-subtle text-info">Participant</span>
+                                }
+                            </td>
+                            <td>
+                                @switch (item.Status)
+                                {
+                                    case "Approved":
+                                        <span class="badge bg-success-subtle text-success">Approved</span>
+                                        break;
+                                    case "Rejected":
+                                        <span class="badge bg-danger-subtle text-danger">Rejected</span>
+                                        break;
+                                    case "Pending":
+                                    case "Submitted":
+                                    default:
+                                        <span class="badge bg-warning-subtle text-warning">Pending Review</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <span class="small text-muted">@item.SubmissionDate.ToString("dd MMM yyyy, h:mm tt")</span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-giveaid-primary btn-sm">
+                                    Review &rarr;
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

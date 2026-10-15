@@ -51,8 +51,8 @@ This checklist tracks the implementation status of all confirmed requirements ac
 - [ ] `FR-028` Secure user login via ASP.NET Core Identity
 - [ ] `FR-029` User logout with session invalidation
 - [ ] `FR-032` User profile management & password change
-- [ ] `FR-040` Expression of interest / volunteer submission
-- [ ] `FR-041` Prevention of duplicate programme interest submissions
+- [x] `FR-040` Expression of interest / volunteer submission
+- [x] `FR-041` Prevention of duplicate programme interest submissions
 - [x] `FR-054` Contact queries linked to logged-in user profile
 - [ ] `FR-055` "Invite a Friend" referral submission
 - [ ] `FR-056` Anti-abuse rate limiting on invitations
@@ -67,7 +67,7 @@ This checklist tracks the implementation status of all confirmed requirements ac
 - [x] `FR-036` Admin CRUD for corporate partners
 - [x] `FR-037` Upload sanitization for NGO/partner logos
 - [x] `FR-042` Admin CRUD for welfare programmes
-- [ ] `FR-043` Admin moderation of volunteer/participation requests
+- [x] `FR-043` Admin moderation of volunteer/participation requests
 - [x] `FR-047` Admin gallery image upload with metadata
 - [x] `FR-048` Admin gallery image deletion with physical file cleanup
 - [x] `FR-052` Admin inquiry dashboard

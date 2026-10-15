@@ -1,0 +1,143 @@
+@model ProgrammeInterestFormViewModel
+@{
+    ViewData["Title"] = $"Express Interest — {Model.ProgrammeTitle}";
+}
+
+<div class="container py-4 py-lg-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Programmes" asp-action="Index">Programmes</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Programmes" asp-action="Details" asp-route-id="@Model.ProgrammeId">@Model.ProgrammeTitle</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Express Interest</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header Banner -->
+            <div class="giveaid-card p-4 p-md-5 mb-4 shadow-sm border-start border-primary border-4">
+                <span class="badge bg-primary-subtle text-primary fw-semibold px-3 py-2 rounded-pill small mb-2">Community Participation</span>
+                <h1 class="h2 fw-bold text-dark mb-2">Volunteer &amp; Participation Application</h1>
+                <p class="text-muted mb-0">
+                    Express interest in participating in or volunteering for <strong>@Model.ProgrammeTitle</strong>.
+                </p>
+
+                <div class="p-3 bg-light rounded-3 mt-3 border">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 small">
+                        <div>
+                            <span class="text-muted d-block">Scheduled Date:</span>
+                            <strong class="text-dark">@Model.ProgrammeDate.ToString("ddd, dd MMM yyyy, h:mm tt")</strong>
+                        </div>
+                        <div>
+                            <span class="text-muted d-block">Venue Location:</span>
+                            <strong class="text-dark">@Model.ProgrammeLocation</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <div class="d-flex align-items-center gap-2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                        <span>@TempData["InfoMessage"]</span>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Application Form Card -->
+            <div class="bg-white border rounded-3 p-4 p-md-5 shadow-sm">
+                <form asp-action="ExpressInterest" method="post" id="interestForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="ProgrammeId" />
+
+                    <!-- Validation Summary -->
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 px-3 small rounded-3 mb-4" role="alert"></div>
+
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="alert alert-info py-2 px-3 small rounded-3 mb-4 d-flex align-items-center gap-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            <span>Signed in as <strong>@User.Identity.Name</strong>. Contact information has been pre-filled from your profile.</span>
+                        </div>
+                    }
+
+                    <!-- 1. Applicant Full Name -->
+                    <div class="mb-3">
+                        <label asp-for="ApplicantName" class="form-label fw-bold text-dark">
+                            Full Name <span class="text-danger">*</span>
+                        </label>
+                        <input asp-for="ApplicantName" class="form-control form-control-lg" placeholder="e.g. Zainab Tariq" required />
+                        <span asp-validation-for="ApplicantName" class="text-danger small"></span>
+                    </div>
+
+                    <!-- 2. Contact Details -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="ApplicantEmail" class="form-label fw-bold text-dark">
+                                Email Address <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="ApplicantEmail" class="form-control" placeholder="name@example.com" type="email" required />
+                            <span asp-validation-for="ApplicantEmail" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="ApplicantPhone" class="form-label fw-bold text-dark">
+                                Phone Number <span class="text-danger">*</span>
+                            </label>
+                            <input asp-for="ApplicantPhone" class="form-control" placeholder="+92 300 1234567" type="tel" required />
+                            <span asp-validation-for="ApplicantPhone" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- 3. Participation Role -->
+                    <div class="mb-3">
+                        <label asp-for="InterestType" class="form-label fw-bold text-dark">
+                            Participation Role <span class="text-danger">*</span>
+                        </label>
+                        <select asp-for="InterestType" asp-items="Model.AvailableRoles" class="form-select form-select-lg">
+                        </select>
+                        <span asp-validation-for="InterestType" class="text-danger small"></span>
+                        <div class="form-text small text-muted">
+                            Choose <strong>Volunteer</strong> if you wish to assist on ground, or <strong>Participant</strong> if applying to attend as a community beneficiary.
+                        </div>
+                    </div>
+
+                    <!-- 4. Message / Skills -->
+                    <div class="mb-4">
+                        <label asp-for="Message" class="form-label fw-bold text-dark">
+                            Relevant Skills, Availability, or Reason for Applying
+                        </label>
+                        <textarea asp-for="Message" class="form-control" rows="4" placeholder="Briefly share any relevant medical, logistics, teaching, or field experience, or what motivates you to join..."></textarea>
+                        <span asp-validation-for="Message" class="text-danger small"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-giveaid-primary py-3 fs-5 justify-content-center" id="btnSubmitInterest">
+                            Submit Application
+                        </button>
+                        <a asp-action="Details" asp-route-id="@Model.ProgrammeId" class="btn btn-giveaid-outline">
+                            &larr; Cancel / Back to Programme Details
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

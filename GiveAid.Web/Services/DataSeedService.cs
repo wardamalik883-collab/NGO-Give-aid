@@ -112,6 +112,56 @@ public class DataSeedService
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Initial {Count} baseline Causes seeded into SQL Server database.", initialCauses.Count);
             }
+
+            // -------------------------------------------------------------
+            // 3. Ensure initial baseline Programmes exist in SQL Server
+            // -------------------------------------------------------------
+            if (!await _context.Programmes.AnyAsync())
+            {
+                var initialProgrammes = new List<Programme>
+                {
+                    new()
+                    {
+                        Title = "Mobile Health Clinic & Diagnostic Camp",
+                        Description = "Providing free general health consultations, eye examinations, diabetic screenings, and distribution of essential medicines in underserved rural districts. Volunteers assist with patient registration, crowd facilitation, and pharmacy distribution.",
+                        EventDate = DateTime.UtcNow.AddDays(14),
+                        EndDate = DateTime.UtcNow.AddDays(16),
+                        Location = "Muzaffargarh District Relief Center, Punjab",
+                        CoordinatorName = "Dr. Farhan Qureshi",
+                        CoordinatorContact = "+92 300 5551234",
+                        Status = "Scheduled",
+                        CreatedAt = DateTime.UtcNow.AddDays(-10)
+                    },
+                    new()
+                    {
+                        Title = "Winter Warmth & Ration Distribution Drive",
+                        Description = "Volunteer-led distribution of heavy thermal blankets, wool jackets, and staple monthly grocery ration hampers to elderly heads of household and destitute families.",
+                        EventDate = DateTime.UtcNow.AddDays(28),
+                        EndDate = DateTime.UtcNow.AddDays(29),
+                        Location = "Quetta Community Center, Balochistan",
+                        CoordinatorName = "Sara Ahmed",
+                        CoordinatorContact = "+92 301 9876543",
+                        Status = "Scheduled",
+                        CreatedAt = DateTime.UtcNow.AddDays(-8)
+                    },
+                    new()
+                    {
+                        Title = "Clean Water Aquifer Verification Mission",
+                        Description = "Past verification mission auditing solar water wells and collecting water purity lab samples across deep desert settlements.",
+                        EventDate = DateTime.UtcNow.AddDays(-20),
+                        EndDate = DateTime.UtcNow.AddDays(-18),
+                        Location = "Mithi & Islamkot, Tharparkar",
+                        CoordinatorName = "Tariq Mehmood",
+                        CoordinatorContact = "+92 321 4443322",
+                        Status = "Completed",
+                        CreatedAt = DateTime.UtcNow.AddDays(-30)
+                    }
+                };
+
+                _context.Programmes.AddRange(initialProgrammes);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Initial {Count} baseline Programmes seeded into SQL Server database.", initialProgrammes.Count);
+            }
         }
         catch (Exception ex)
         {

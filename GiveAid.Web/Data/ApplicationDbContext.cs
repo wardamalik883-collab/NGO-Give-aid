@@ -85,6 +85,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey(pi => pi.ProgrammeId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // ProgrammeInterest -> User: Optional relationship, SetNull on user deletion
+        modelBuilder.Entity<ProgrammeInterest>()
+            .HasOne(pi => pi.User)
+            .WithMany()
+            .HasForeignKey(pi => pi.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // ContactQuery -> User: Optional relationship, SetNull on user deletion
         modelBuilder.Entity<ContactQuery>()
             .HasOne(q => q.User)
@@ -114,5 +121,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         modelBuilder.Entity<ProgrammeInterest>()
             .HasIndex(pi => new { pi.ProgrammeId, pi.ApplicantEmail })
             .IsUnique();
+
+        // Index on ProgrammeInterest.UserId for efficient user history lookup
+        modelBuilder.Entity<ProgrammeInterest>()
+            .HasIndex(pi => pi.UserId);
     }
 }

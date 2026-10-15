@@ -1,6 +1,7 @@
 # TASK-14 — Programme interest / participation
 
-**Status:** Not Started  
+**Status:** Done  
+**Completed:** 15 October 2026  
 **Dependencies:** Task 11  
 **Estimated effort:** Estimate after checking your pace; do not treat this as a deadline.
 

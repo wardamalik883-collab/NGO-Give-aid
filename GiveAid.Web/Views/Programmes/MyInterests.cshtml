@@ -1,0 +1,155 @@
+@model UserProgrammeInterestViewModel
+@{
+    ViewData["Title"] = "My Programme Applications — Give-AID";
+}
+
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <div>
+            <span class="section-tag">Volunteer &amp; Community Portal</span>
+            <h1 class="h2 fw-bold text-dark mb-1">My Programme Applications</h1>
+            <p class="text-muted mb-0">Track your submitted volunteer and participation requests for welfare drives.</p>
+        </div>
+        <a asp-controller="Programmes" asp-action="Index" class="btn btn-giveaid-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+            </svg>
+            Browse Upcoming Programmes
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Summary KPI Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="giveaid-card p-3 border-start border-primary border-4">
+                <div class="text-muted small fw-semibold text-uppercase">Total Applications</div>
+                <div class="h3 fw-bold text-dark mb-0">@Model.TotalApplications</div>
+                <small class="text-muted">All participation requests</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="giveaid-card p-3 border-start border-warning border-4">
+                <div class="text-muted small fw-semibold text-uppercase">Pending Review</div>
+                <div class="h3 fw-bold text-warning mb-0">@Model.PendingCount</div>
+                <small class="text-muted">Awaiting coordinator review</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="giveaid-card p-3 border-start border-success border-4">
+                <div class="text-muted small fw-semibold text-uppercase">Approved</div>
+                <div class="h3 fw-bold text-success mb-0">@Model.ApprovedCount</div>
+                <small class="text-muted">Confirmed participation</small>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="giveaid-card p-3 border-start border-secondary border-4">
+                <div class="text-muted small fw-semibold text-uppercase">Not Selected</div>
+                <div class="h3 fw-bold text-muted mb-0">@Model.RejectedCount</div>
+                <small class="text-muted">Capacity limit reached</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Applications List -->
+    @if (!Model.Interests.Any())
+    {
+        <div class="giveaid-card p-5 text-center my-4">
+            <div class="auth-icon-circle mx-auto mb-3" style="width: 64px; height: 64px;">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <h4 class="fw-bold text-dark mb-1">No Applications Submitted</h4>
+            <p class="text-muted mx-auto mb-4" style="max-width: 450px;">
+                You haven't applied to volunteer or participate in any welfare programmes yet. Join an upcoming initiative to make an impact.
+            </p>
+            <a asp-action="Index" class="btn btn-giveaid-primary px-4">
+                Explore Upcoming Programmes
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="giveaid-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Programme</th>
+                            <th>Role</th>
+                            <th>Event Date</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Notes</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Interests)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold text-dark">@(item.Programme?.Title ?? "—")</div>
+                                    <small class="text-muted">@(item.Programme?.Location ?? "—")</small>
+                                </td>
+                                <td>
+                                    <span class="badge @(item.InterestType == "Volunteer" ? "bg-primary-subtle text-primary" : "bg-info-subtle text-info")">
+                                        @item.InterestType
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="small text-dark">@(item.Programme?.EventDate.ToString("dd MMM yyyy") ?? "—")</span>
+                                </td>
+                                <td>
+                                    <span class="small text-muted">@item.SubmissionDate.ToString("dd MMM yyyy")</span>
+                                </td>
+                                <td>
+                                    @if (string.Equals(item.Status, "Approved", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="badge bg-success">Approved</span>
+                                    }
+                                    else if (string.Equals(item.Status, "Rejected", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        <span class="badge bg-secondary">Rejected</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="small text-muted text-truncate d-inline-block" style="max-width: 180px;">
+                                        @(item.AdminNotes ?? item.Message ?? "—")
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details" asp-route-id="@item.ProgrammeId" class="btn btn-sm btn-outline-primary">
+                                        View Programme
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <div class="mt-4 text-center">
+        <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-giveaid-outline">
+            &larr; Back to Home
+        </a>
+    </div>
+</div>
