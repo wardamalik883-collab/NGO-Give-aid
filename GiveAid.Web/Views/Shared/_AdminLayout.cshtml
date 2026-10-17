@@ -1,0 +1,249 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Give-AID Admin Portal</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Give-AID Master Design System -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Dedicated Admin Stylesheet -->
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="admin-body">
+    <!-- Admin Topbar -->
+    <header class="navbar navbar-expand admin-topbar">
+        <div class="container-fluid px-2 px-md-3">
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-outline-light d-lg-none" id="adminSidebarToggle" aria-label="Toggle navigation">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <a class="navbar-brand me-3" asp-controller="Admin" asp-action="Index">
+                    <span class="rounded bg-teal-600 px-2 py-1 text-white fw-bold me-1" style="background: var(--giveaid-primary, #0f766e);">G</span>
+                    <span>Give-AID</span>
+                    <span class="badge bg-danger text-white rounded-pill px-2 py-1 ms-1 small" style="font-size: 0.72rem;">Admin Portal</span>
+                </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-outline-light d-none d-sm-inline-flex align-items-center gap-1" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    <span>Public Site</span>
+                </a>
+
+                <div class="d-flex align-items-center ms-2 text-white small">
+                    <div class="d-none d-md-block text-end me-2">
+                        <div class="fw-semibold lh-sm">@User.Identity?.Name</div>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.65rem;">Administrator</span>
+                    </div>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Sign out of Admin Session">
+                            Sign Out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Backdrop -->
+    <div class="admin-sidebar-backdrop" id="adminSidebarBackdrop"></div>
+
+    <!-- Admin Body Wrapper -->
+    <div class="admin-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-sidebar-header d-flex align-items-center justify-content-between">
+                <div>
+                    <div class="text-white fw-bold small">NAVIGATION MENU</div>
+                    <div class="text-muted" style="font-size: 0.75rem;">Role: Admin Authorized</div>
+                </div>
+                <button type="button" class="btn-close btn-close-white d-lg-none" id="adminSidebarClose" aria-label="Close"></button>
+            </div>
+
+            <ul class="admin-sidebar-nav">
+                <li class="admin-nav-item">
+                    <a asp-controller="Admin" asp-action="Index" class="admin-nav-link @(currentController == "Admin" ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        <span>Dashboard Overview</span>
+                    </a>
+                </li>
+
+                <li class="admin-sidebar-heading">Content & Partnerships</li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="AdminNgos" asp-action="Index" class="admin-nav-link @(currentController == "AdminNgos" ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4M5 21V10.87M19 21V10.87"></path>
+                        </svg>
+                        <span>Affiliated NGOs</span>
+                    </a>
+                </li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="AdminPartners" asp-action="Index" class="admin-nav-link @(currentController == "AdminPartners" ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <span>Corporate Partners</span>
+                    </a>
+                </li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="AdminProgrammes" asp-action="Index" class="admin-nav-link @(currentController == "AdminProgrammes" ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span>Welfare Programmes</span>
+                    </a>
+                </li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="AdminGallery" asp-action="Index" class="admin-nav-link @(currentController == "AdminGallery" ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <span>Photo Gallery</span>
+                    </a>
+                </li>
+
+                <li class="admin-sidebar-heading">Operations & Community</li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="AdminQueries" asp-action="Index" class="admin-nav-link @(currentController == "AdminQueries" ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>Inquiries & Help</span>
+                    </a>
+                </li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="AdminDonations" asp-action="Index" class="admin-nav-link @(currentController == "AdminDonations" ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        <span>Simulated Donations</span>
+                    </a>
+                </li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="AdminInterests" asp-action="Index" class="admin-nav-link @(currentController == "AdminInterests" ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <span>Volunteer Applications</span>
+                    </a>
+                </li>
+
+                <li class="admin-sidebar-heading">Public Catalogs</li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="Causes" asp-action="Index" class="admin-nav-link" target="_blank">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        </svg>
+                        <span>Active Causes &nearr;</span>
+                    </a>
+                </li>
+
+                <li class="admin-nav-item">
+                    <a asp-controller="Programmes" asp-action="Index" class="admin-nav-link" target="_blank">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="12 8 8 12 12 16 12 8"></polygon>
+                        </svg>
+                        <span>Public Programmes &nearr;</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="admin-main" id="admin-main-content" role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Admin Footer -->
+    <footer class="admin-footer">
+        <div class="container-fluid px-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+            <div>
+                <strong>Give-AID Administrative Portal</strong> &middot; Role-Based Security Verified
+            </div>
+            <div class="text-muted small">
+                Give-AID Humanitarian NGO &copy; @DateTime.UtcNow.Year
+            </div>
+        </div>
+    </footer>
+
+    <!-- Core Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Mobile Sidebar Controller -->
+    <script>
+        (function () {
+            var toggleBtn = document.getElementById('adminSidebarToggle');
+            var closeBtn = document.getElementById('adminSidebarClose');
+            var sidebar = document.getElementById('adminSidebar');
+            var backdrop = document.getElementById('adminSidebarBackdrop');
+
+            function toggleSidebar() {
+                if (sidebar) sidebar.classList.toggle('show');
+                if (backdrop) backdrop.classList.toggle('show');
+            }
+
+            function closeSidebar() {
+                if (sidebar) sidebar.classList.remove('show');
+                if (backdrop) backdrop.classList.remove('show');
+            }
+
+            if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+            if (backdrop) backdrop.addEventListener('click', closeSidebar);
+        })();
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

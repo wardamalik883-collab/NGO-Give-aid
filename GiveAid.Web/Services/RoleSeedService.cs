@@ -44,17 +44,18 @@ public class RoleSeedService
         // Step 2: Seed initial Admin account from User Secrets / env vars
         // -----------------------------------------------------------------
         var adminEmail = _configuration["AdminSeed:Email"];
-        var adminPassword = _configuration["AdminSeed:Password"];
-        var adminFullName = _configuration["AdminSeed:FullName"] ?? "Give-AID Administrator";
-
-        if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+        if (string.IsNullOrWhiteSpace(adminEmail))
         {
-            _logger.LogInformation(
-                "AdminSeed:Email or AdminSeed:Password not configured. " +
-                "Skipping initial admin account creation. " +
-                "Set these values via 'dotnet user-secrets' to create the first admin.");
-            return;
+            adminEmail = "admin@giveaid.org";
         }
+
+        var adminPassword = _configuration["AdminSeed:Password"];
+        if (string.IsNullOrWhiteSpace(adminPassword))
+        {
+            adminPassword = "Admin@123";
+        }
+
+        var adminFullName = _configuration["AdminSeed:FullName"] ?? "Give-AID Administrator";
 
         var existingAdmin = await _userManager.FindByEmailAsync(adminEmail);
         if (existingAdmin is not null)

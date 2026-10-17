@@ -1,0 +1,243 @@
+/* ==========================================================================
+   Give-AID NGO — Admin Portal Dedicated Stylesheet
+   Ensures consistent, responsive administration interface isolated from public styling
+   ========================================================================== */
+
+:root {
+  --admin-sidebar-width: 260px;
+  --admin-sidebar-bg: #1e293b;
+  --admin-sidebar-text: #94a3b8;
+  --admin-sidebar-hover: #334155;
+  --admin-sidebar-active-bg: #0f766e;
+  --admin-sidebar-active-text: #ffffff;
+  --admin-topbar-bg: #0f172a;
+  --admin-body-bg: #f8fafc;
+}
+
+body.admin-body {
+  background-color: var(--admin-body-bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Admin Topbar */
+.admin-topbar {
+  background-color: var(--admin-topbar-bg);
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.25rem;
+}
+
+.admin-topbar .navbar-brand {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-topbar .navbar-brand:hover {
+  color: #5eead4;
+}
+
+/* Layout Wrapper */
+.admin-wrapper {
+  display: flex;
+  flex: 1 0 auto;
+  position: relative;
+}
+
+/* Sidebar */
+.admin-sidebar {
+  width: var(--admin-sidebar-width);
+  background-color: var(--admin-sidebar-bg);
+  color: var(--admin-sidebar-text);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #334155;
+  transition: all 0.3s ease;
+}
+
+.admin-sidebar-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-sidebar-nav {
+  padding: 1rem 0.75rem;
+  list-style: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-sidebar-heading {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  padding: 0.75rem 0.75rem 0.25rem;
+}
+
+.admin-nav-item .admin-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.85rem;
+  color: var(--admin-sidebar-text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.925rem;
+  border-radius: 8px;
+  transition: all 0.15s ease-in-out;
+}
+
+.admin-nav-item .admin-nav-link svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  opacity: 0.8;
+}
+
+.admin-nav-item .admin-nav-link:hover {
+  background-color: var(--admin-sidebar-hover);
+  color: #ffffff;
+}
+
+.admin-nav-item .admin-nav-link:hover svg {
+  opacity: 1;
+}
+
+.admin-nav-item .admin-nav-link.active {
+  background-color: var(--admin-sidebar-active-bg);
+  color: var(--admin-sidebar-active-text);
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.4);
+}
+
+.admin-nav-item .admin-nav-link.active svg {
+  opacity: 1;
+}
+
+/* Main Content Area */
+.admin-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 1.75rem;
+}
+
+/* Admin Metric Card */
+.admin-stat-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+}
+
+.admin-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0f172a;
+}
+
+.admin-stat-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+/* Module Cards */
+.admin-module-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.2s ease;
+}
+
+.admin-module-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.07);
+}
+
+/* Footer */
+.admin-footer {
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: auto;
+}
+
+/* Responsive Mobile Navigation */
+@media (max-width: 991.98px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 57px;
+    bottom: 0;
+    left: -260px;
+    z-index: 1025;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.25);
+  }
+
+  .admin-sidebar.show {
+    left: 0;
+  }
+
+  .admin-sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 57px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.5);
+    z-index: 1020;
+  }
+
+  .admin-sidebar-backdrop.show {
+    display: block;
+  }
+
+  .admin-main {
+    padding: 1rem;
+  }
+}

@@ -347,9 +347,46 @@ public class HomeController : Controller
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    public IActionResult Error(int? statusCode = null)
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var requestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+        var model = new ErrorViewModel
+        {
+            RequestId = requestId,
+            StatusCode = statusCode
+        };
+
+        if (statusCode == 404)
+        {
+            model.Title = "Page Not Found";
+            model.Message = "The page or resource you are looking for might have been removed, had its name changed, or is temporarily unavailable.";
+            model.ActionUrl = "/";
+            model.ActionText = "Return to Home Page";
+        }
+        else if (statusCode == 403)
+        {
+            model.Title = "Access Forbidden";
+            model.Message = "You do not have permission to access the requested resource. Administrative areas are strictly restricted.";
+            model.ActionUrl = "/Account/Login";
+            model.ActionText = "Sign In as Administrator";
+        }
+        else if (statusCode == 400)
+        {
+            model.Title = "Bad Request";
+            model.Message = "The request could not be understood or was missing required parameters.";
+            model.ActionUrl = "/";
+            model.ActionText = "Return to Home Page";
+        }
+        else if (statusCode == 500)
+        {
+            model.Title = "Unexpected Server Error";
+            model.Message = "An unexpected error occurred while processing your request. Our technical team has been logged for diagnostics.";
+            model.ActionUrl = "/";
+            model.ActionText = "Return to Safety";
+        }
+
+        _logger.LogWarning("Handled HTTP error {StatusCode} for RequestId {RequestId}", statusCode, requestId);
+        return View(model);
     }
 
     // =========================================================================

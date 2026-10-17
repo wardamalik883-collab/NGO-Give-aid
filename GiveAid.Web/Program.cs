@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GiveAid.Web.Data;
 using GiveAid.Web.Models;
@@ -63,8 +64,11 @@ builder.Services.AddMemoryCache();
 // Register simulated payment service for safe demo donations (Task 13)
 builder.Services.AddScoped<ISimulatedPaymentService, SimulatedPaymentService>();
 
-// Add MVC services to the container.
-builder.Services.AddControllersWithViews();
+// Add MVC services to the container with global Antiforgery enforcement.
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
 
 var app = builder.Build();
 
@@ -73,6 +77,9 @@ var app = builder.Build();
 // ============================================================
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await dbContext.Database.MigrateAsync();
+
     var roleSeedService = scope.ServiceProvider.GetRequiredService<RoleSeedService>();
     await roleSeedService.SeedAsync();
 
@@ -89,6 +96,19 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios.
     app.UseHsts();
 }
+
+// User-friendly re-execution for 404, 403, and other HTTP error status codes (Task 17)
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+
+// Standard HTTP Security Headers (Task 17)
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("X-Frame-Options", "SAMEORIGIN");
+    context.Response.Headers.Append("X-XSS-Protection", "1; mode=block");
+    context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
+    await next();
+});
 
 app.UseHttpsRedirection();
 app.UseRouting();

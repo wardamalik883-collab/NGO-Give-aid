@@ -1,25 +1,75 @@
-﻿@model ErrorViewModel
+@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = Model.Title ?? "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="giveaid-card p-4 p-md-5">
+                <div class="mb-3">
+                    @if (Model.StatusCode == 404)
+                    {
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-warning-subtle text-warning mb-2" style="width: 80px; height: 80px;">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        <span class="badge bg-warning text-dark px-3 py-1 rounded-pill d-block mx-auto mb-2" style="width: fit-content;">HTTP 404 &middot; Not Found</span>
+                    }
+                    else if (Model.StatusCode == 403)
+                    {
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger mb-2" style="width: 80px; height: 80px;">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                            </svg>
+                        </div>
+                        <span class="badge bg-danger px-3 py-1 rounded-pill d-block mx-auto mb-2" style="width: fit-content;">HTTP 403 &middot; Forbidden</span>
+                    }
+                    else
+                    {
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center bg-danger-subtle text-danger mb-2" style="width: 80px; height: 80px;">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        @if (Model.StatusCode.HasValue)
+                        {
+                            <span class="badge bg-danger px-3 py-1 rounded-pill d-block mx-auto mb-2" style="width: fit-content;">HTTP @Model.StatusCode</span>
+                        }
+                    }
+                </div>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+                <h1 class="h3 fw-bold text-dark mb-2">@Model.Title</h1>
+                <p class="text-muted mb-4">
+                    @Model.Message
+                </p>
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+                <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                    <a href="@(Model.ActionUrl ?? "/")" class="btn btn-giveaid-primary">
+                        @(Model.ActionText ?? "Return to Home")
+                    </a>
+                    <a asp-controller="Causes" asp-action="Index" class="btn btn-giveaid-outline">
+                        Browse Causes
+                    </a>
+                    <a asp-controller="Contact" asp-action="Index" class="btn btn-outline-secondary">
+                        Contact Support
+                    </a>
+                </div>
+
+                @if (Model.ShowRequestId)
+                {
+                    <div class="border-top pt-3 text-muted small">
+                        <span>Incident Identifier for Support:</span>
+                        <code class="text-secondary bg-light px-2 py-1 rounded font-monospace">@Model.RequestId</code>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

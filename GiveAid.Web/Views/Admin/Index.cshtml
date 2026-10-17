@@ -1,151 +1,585 @@
+@model GiveAid.Web.ViewModels.AdminDashboardViewModel
 @{
-    ViewData["Title"] = "Admin Portal";
+    ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container py-4">
-    <div class="giveaid-card p-4 p-md-5">
-        <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+<!-- Dashboard Header -->
+<div class="d-flex flex-column flex-md-row align-items-start align-items-md-center justify-content-between gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fw-semibold">
+                Role: Admin Verified
+            </span>
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-semibold">
+                RBAC Enforced
+            </span>
+        </div>
+        <h1 class="h3 fw-bold text-dark mb-1">Administrative Dashboard</h1>
+        <p class="text-muted mb-0">
+            Welcome, <strong>@User.Identity?.Name</strong> &middot; Real-time platform summary and module administration.
+        </p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-controller="AdminQueries" asp-action="Index" class="btn btn-outline-secondary btn-sm position-relative">
+            Inquiries
+            @if (Model.PendingContactQueries > 0)
+            {
+                <span class="badge bg-danger rounded-pill ms-1">@Model.PendingContactQueries</span>
+            }
+        </a>
+        <a asp-controller="AdminInterests" asp-action="Index" class="btn btn-outline-secondary btn-sm position-relative">
+            Applications
+            @if (Model.PendingProgrammeRequests > 0)
+            {
+                <span class="badge bg-warning text-dark rounded-pill ms-1">@Model.PendingProgrammeRequests</span>
+            }
+        </a>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-giveaid-outline btn-sm" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            Public Site &nearr;
+        </a>
+    </div>
+</div>
+
+<!-- =========================================================================
+     Summary Metric KPI Cards (Live Database Statistics)
+     ========================================================================= -->
+<div class="row g-3 mb-4">
+    <!-- Total Causes -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-teal">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Active Causes</span>
+                <div class="admin-stat-icon bg-teal-50 text-teal" style="background:#ccfbf1; color:#0f766e;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalCauses</div>
+            <div class="text-muted small mt-1">
+                <span class="fw-semibold text-success">@Model.ActiveCausesCount</span> active campaigns
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Donations -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-info">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Simulated Donations</span>
+                <div class="admin-stat-icon bg-info-subtle text-info">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalDonations</div>
+            <div class="text-muted small mt-1">
+                Raised: <strong class="text-dark">$@Model.TotalDonationsAmount.ToString("N2")</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registered Members -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-primary">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Registered Members</span>
+                <div class="admin-stat-icon bg-primary-subtle text-primary">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalMembers</div>
+            <div class="text-muted small mt-1">
+                ASP.NET Identity Users
+            </div>
+        </div>
+    </div>
+
+    <!-- Affiliated NGOs -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-secondary">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Partner NGOs</span>
+                <div class="admin-stat-icon bg-secondary-subtle text-secondary">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 21h18M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4M5 21V10.87M19 21V10.87"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalNGOs</div>
+            <div class="text-muted small mt-1">
+                Accredited organizations
+            </div>
+        </div>
+    </div>
+
+    <!-- Corporate Partners -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-warning">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Corporate Partners</span>
+                <div class="admin-stat-icon bg-warning-subtle text-warning">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalPartners</div>
+            <div class="text-muted small mt-1">
+                Sponsors & corporate patrons
+            </div>
+        </div>
+    </div>
+
+    <!-- Welfare Programmes -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-success">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Welfare Programmes</span>
+                <div class="admin-stat-icon bg-success-subtle text-success">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalProgrammes</div>
+            <div class="text-muted small mt-1">
+                <span class="fw-semibold text-success">@Model.ActiveProgrammesCount</span> active field drives
+            </div>
+        </div>
+    </div>
+
+    <!-- Photo Gallery Items -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-dark">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Gallery Photos</span>
+                <div class="admin-stat-icon bg-light text-dark border">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalGalleryItems</div>
+            <div class="text-muted small mt-1">
+                Fieldwork photos uploaded
+            </div>
+        </div>
+    </div>
+
+    <!-- Inquiries & Pending -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-danger">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Contact Queries</span>
+                <div class="admin-stat-icon bg-danger-subtle text-danger">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalContactQueries</div>
+            <div class="text-muted small mt-1">
+                @if (Model.PendingContactQueries > 0)
+                {
+                    <span class="badge bg-danger">@Model.PendingContactQueries Pending Review</span>
+                }
+                else
+                {
+                    <span class="text-success">&check; All inquiries answered</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Volunteer Applications & Pending -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-primary">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Volunteer Requests</span>
+                <div class="admin-stat-icon bg-primary-subtle text-primary">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.PendingProgrammeRequests</div>
+            <div class="text-muted small mt-1">
+                @if (Model.PendingProgrammeRequests > 0)
+                {
+                    <span class="badge bg-warning text-dark">@Model.PendingProgrammeRequests Pending Action</span>
+                }
+                else
+                {
+                    <span class="text-success">&check; No pending requests</span>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Friend Referrals / Invitations -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="admin-stat-card border-start border-4 border-info">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="admin-stat-label">Friend Invitations</span>
+                <div class="admin-stat-icon bg-info-subtle text-info">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="admin-stat-value">@Model.TotalInvitations</div>
+            <div class="text-muted small mt-1">
+                Community referrals sent
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================================
+     Administrative Management Modules Grid
+     ========================================================================= -->
+<div class="d-flex align-items-center justify-content-between mb-3 mt-4">
+    <h2 class="h5 fw-bold text-dark mb-0">Management Modules</h2>
+    <span class="text-muted small">Direct navigation to active administrative areas</span>
+</div>
+
+<div class="row g-3 mb-5">
+    <!-- 1. NGO Management -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card">
             <div>
-                <span class="badge bg-danger-subtle text-danger fw-semibold px-3 py-2 rounded-pill mb-2">Admin Authorized Area</span>
-                <h1 class="h2 fw-bold text-dark mb-1">Administrative Dashboard</h1>
-                <p class="text-muted mb-0">Role-based security verified: Welcome, <strong>@User.Identity?.Name</strong></p>
-            </div>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-giveaid-outline">
-                &larr; View Public Site
-            </a>
-        </div>
-
-        <!-- Security Status -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-6">
-                <div class="p-3 border rounded-3 bg-light">
-                    <h5 class="fw-bold text-dark">Security Status</h5>
-                    <p class="text-muted small mb-2">ASP.NET Core Identity authentication active.</p>
-                    <span class="badge bg-success">Role: Admin Confirmed</span>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Affiliated NGOs</h5>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Task 10</span>
                 </div>
+                <p class="text-muted small mb-3">
+                    Accredit and manage non-governmental partner organizations, registration codes, mission details, and logos.
+                </p>
             </div>
-            <div class="col-md-6">
-                <div class="p-3 border rounded-3 bg-light">
-                    <h5 class="fw-bold text-dark">Role Protection</h5>
-                    <p class="text-muted small mb-2"><code>[Authorize(Roles = "Admin")]</code> controller attributes are guarding all endpoints.</p>
-                    <span class="badge bg-primary">RBAC Guard Active</span>
-                </div>
+            <div>
+                <a asp-controller="AdminNgos" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">
+                    Manage NGOs &rarr;
+                </a>
             </div>
         </div>
+    </div>
 
-        <h4 class="h5 fw-bold text-dark mb-3">Management Modules</h4>
-        <div class="row g-4">
-            <!-- NGO Management -->
-            <div class="col-md-6 col-lg-3">
-                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">NGOs</h5>
-                            <span class="badge bg-primary-subtle text-primary">Task 10</span>
-                        </div>
-                        <p class="text-muted small">Manage accredited partner NGOs, registration details, mission statements, and logos.</p>
-                    </div>
-                    <div>
-                        <a asp-controller="AdminNgos" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage NGOs &rarr;</a>
-                    </div>
+    <!-- 2. Partner Management -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Corporate Partners</h5>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Task 10</span>
                 </div>
+                <p class="text-muted small mb-3">
+                    Manage corporate sponsors, emergency welfare partners, healthcare patrons, and display order.
+                </p>
+            </div>
+            <div>
+                <a asp-controller="AdminPartners" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">
+                    Manage Partners &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Programmes Management -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Welfare Programmes</h5>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">Task 11</span>
+                </div>
+                <p class="text-muted small mb-3">
+                    Schedule community drives, set dates, assign venue locations, set volunteer requirements, and upload banners.
+                </p>
+            </div>
+            <div>
+                <a asp-controller="AdminProgrammes" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">
+                    Manage Programmes &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Photo Gallery Management -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Photo Gallery</h5>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">Task 11</span>
+                </div>
+                <p class="text-muted small mb-3">
+                    Upload fieldwork photography, write accessible alt text, provide captions, and link photos to welfare drives.
+                </p>
+            </div>
+            <div>
+                <a asp-controller="AdminGallery" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">
+                    Manage Gallery &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Inquiries & Queries Management -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Inquiries & Help</h5>
+                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Task 12</span>
+                </div>
+                <p class="text-muted small mb-3">
+                    Review visitor questions, post official administrative replies, maintain audit logs, and track resolution statuses.
+                </p>
+            </div>
+            <div>
+                <a asp-controller="AdminQueries" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">
+                    Manage Inquiries &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Donations Management -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Simulated Donations</h5>
+                    <span class="badge bg-info-subtle text-info border border-info-subtle">Task 13</span>
+                </div>
+                <p class="text-muted small mb-3">
+                    Audit simulated donor contributions, inspect unique reference numbers, filter by cause, and update statuses.
+                </p>
+            </div>
+            <div>
+                <a asp-controller="AdminDonations" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">
+                    Manage Donations &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. Volunteer & Programme Interests -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Volunteer Applications</h5>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Task 14</span>
+                </div>
+                <p class="text-muted small mb-3">
+                    Screen volunteer participation requests, filter by programme, manage approval statuses, and store admin review notes.
+                </p>
+            </div>
+            <div>
+                <a asp-controller="AdminInterests" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">
+                    Manage Volunteers &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. Causes Catalog (Public Site Integration) -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card bg-light">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Charitable Causes</h5>
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Public Catalog</span>
+                </div>
+                <p class="text-muted small mb-3">
+                    Active causes with financial targets and current progress. Linked directly to affiliated partner NGOs.
+                </p>
+            </div>
+            <div>
+                <a asp-controller="Causes" asp-action="Index" class="btn btn-giveaid-outline btn-sm w-100" target="_blank">
+                    Browse Public Causes &nearr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. Identity & Member Accounts -->
+    <div class="col-md-6 col-xl-4">
+        <div class="admin-module-card bg-light">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="fw-bold text-dark mb-0">Member Accounts</h5>
+                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">Identity Core</span>
+                </div>
+                <p class="text-muted small mb-3">
+                    Registered users and role-based access control are secured via ASP.NET Core Identity with PBKDF2 password hashing.
+                </p>
+            </div>
+            <div>
+                <span class="btn btn-outline-secondary btn-sm w-100 disabled text-muted">
+                    Secured by ASP.NET Core Identity
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =========================================================================
+     Recent Operations & Activity Feeds (With Empty State Handling)
+     ========================================================================= -->
+<div class="row g-4">
+    <!-- Recent Donations -->
+    <div class="col-lg-6">
+        <div class="giveaid-card p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                <h5 class="fw-bold text-dark mb-0">Recent Simulated Donations</h5>
+                <a asp-controller="AdminDonations" asp-action="Index" class="btn btn-sm btn-link text-decoration-none">View All &rarr;</a>
             </div>
 
-            <!-- Partner Management -->
-            <div class="col-md-6 col-lg-3">
-                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">Partners</h5>
-                            <span class="badge bg-primary-subtle text-primary">Task 10</span>
-                        </div>
-                        <p class="text-muted small">Manage corporate partners, sponsors, partnership tiers, and logos.</p>
-                    </div>
-                    <div>
-                        <a asp-controller="AdminPartners" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Partners &rarr;</a>
-                    </div>
+            @if (!Model.RecentDonations.Any())
+            {
+                <div class="text-center py-4 text-muted">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-2 text-muted">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                    <p class="small mb-0">No donations recorded in database yet.</p>
                 </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Reference</th>
+                                <th>Donor</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th class="text-end">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var donation in Model.RecentDonations)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="AdminDonations" asp-action="Details" asp-route-id="@donation.Id" class="font-monospace small fw-semibold text-decoration-none">
+                                            @donation.TransactionReference
+                                        </a>
+                                    </td>
+                                    <td>@donation.DonorName</td>
+                                    <td class="fw-bold text-dark">$@donation.Amount.ToString("N2")</td>
+                                    <td>
+                                        @if (donation.PaymentStatus == "Completed")
+                                        {
+                                            <span class="badge bg-success-subtle text-success">Completed</span>
+                                        }
+                                        else if (donation.PaymentStatus == "Failed")
+                                        {
+                                            <span class="badge bg-danger-subtle text-danger">Failed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning">@donation.PaymentStatus</span>
+                                        }
+                                    </td>
+                                    <td class="text-end text-muted small">@donation.DonationDate.ToString("dd MMM")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Recent Volunteer Requests -->
+    <div class="col-lg-6">
+        <div class="giveaid-card p-4 h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                <h5 class="fw-bold text-dark mb-0">Recent Volunteer Applications</h5>
+                <a asp-controller="AdminInterests" asp-action="Index" class="btn btn-sm btn-link text-decoration-none">View All &rarr;</a>
             </div>
 
-            <!-- Programmes Management -->
-            <div class="col-md-6 col-lg-3">
-                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between border-start border-primary border-3">
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">Programmes</h5>
-                            <span class="badge bg-success-subtle text-success">Task 11</span>
-                        </div>
-                        <p class="text-muted small">Schedule community welfare drives, set venues, assign coordinators, and upload banners.</p>
-                    </div>
-                    <div>
-                        <a asp-controller="AdminProgrammes" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Programmes &rarr;</a>
-                    </div>
+            @if (!Model.RecentInterests.Any())
+            {
+                <div class="text-center py-4 text-muted">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-2 text-muted">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                    <p class="small mb-0">No volunteer applications submitted yet.</p>
                 </div>
-            </div>
-
-            <!-- Gallery Management -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between border-start border-success border-3">
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">Gallery</h5>
-                            <span class="badge bg-success-subtle text-success">Task 11</span>
-                        </div>
-                        <p class="text-muted small">Upload high-res fieldwork photos, write captions, assign alt text, and link to events.</p>
-                    </div>
-                    <div>
-                        <a asp-controller="AdminGallery" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Gallery &rarr;</a>
-                    </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Programme</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th class="text-end">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var interest in Model.RecentInterests)
+                            {
+                                <tr>
+                                    <td>
+                                        <a asp-controller="AdminInterests" asp-action="Details" asp-route-id="@interest.Id" class="fw-semibold text-decoration-none">
+                                            @interest.ApplicantName
+                                        </a>
+                                    </td>
+                                    <td class="text-truncate" style="max-width: 140px;">@interest.ProgrammeTitle</td>
+                                    <td><span class="badge bg-light text-dark border">@interest.InterestType</span></td>
+                                    <td>
+                                        @if (interest.Status == "Pending")
+                                        {
+                                            <span class="badge bg-warning text-dark">Pending</span>
+                                        }
+                                        else if (interest.Status == "Approved")
+                                        {
+                                            <span class="badge bg-success-subtle text-success">Approved</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary-subtle text-secondary">@interest.Status</span>
+                                        }
+                                    </td>
+                                    <td class="text-end text-muted small">@interest.SubmissionDate.ToString("dd MMM")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-
-            <!-- Inquiries & Queries Management -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between border-start border-warning border-3">
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">Inquiries</h5>
-                            <span class="badge bg-warning-subtle text-warning">Task 12</span>
-                        </div>
-                        <p class="text-muted small">Review visitor questions, post official administrative replies, and track resolution statuses.</p>
-                    </div>
-                    <div>
-                        <a asp-controller="AdminQueries" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Inquiries &rarr;</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Donations Management (Task 13) -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between border-start border-info border-3">
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">Donations</h5>
-                            <span class="badge bg-info-subtle text-info">Task 13</span>
-                        </div>
-                        <p class="text-muted small">Audit demo contributions, track funding progress, inspect references, and manage donation statuses.</p>
-                    </div>
-                    <div>
-                        <a asp-controller="AdminDonations" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Donations &rarr;</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Volunteer & Programme Interests (Task 14) -->
-            <div class="col-md-6 col-lg-4 col-xl-3">
-                <div class="p-4 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between border-start border-primary border-3">
-                    <div>
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <h5 class="fw-bold text-dark mb-0">Volunteers</h5>
-                            <span class="badge bg-primary-subtle text-primary">Task 14</span>
-                        </div>
-                        <p class="text-muted small">Review volunteer applications, filter by welfare drive, moderate statuses, and notify applicants.</p>
-                    </div>
-                    <div>
-                        <a asp-controller="AdminInterests" asp-action="Index" class="btn btn-giveaid-primary btn-sm w-100">Manage Volunteers &rarr;</a>
-                    </div>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </div>

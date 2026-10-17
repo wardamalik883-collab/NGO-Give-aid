@@ -1,0 +1,163 @@
+erDiagram
+    %% =========================================================================
+    %% Give-AID NGO — Entity-Relationship Diagram (ERD)
+    %% Fully verified against ApplicationDbContext.cs & EF Core Migrations
+    %% =========================================================================
+
+    AspNetUsers {
+        string Id PK "nvarchar(450)"
+        string UserName "nvarchar(256)"
+        string Email "nvarchar(256)"
+        string FullName "nvarchar(100)"
+        datetime CreatedAt "datetime2"
+        string PasswordHash "nvarchar(max)"
+        string PhoneNumber "nvarchar(max)"
+    }
+
+    NGOs {
+        int Id PK "int IDENTITY"
+        string Name "nvarchar(150)"
+        string RegistrationNumber "nvarchar(50)"
+        string Description "nvarchar(1000)"
+        string Address "nvarchar(250)"
+        string Email "nvarchar(100)"
+        string Phone "nvarchar(30)"
+        string WebsiteUrl "nvarchar(250)"
+        string LogoPath "nvarchar(250)"
+        bit IsActive "bit"
+        datetime CreatedAt "datetime2"
+    }
+
+    Causes {
+        int Id PK "int IDENTITY"
+        string Title "nvarchar(150)"
+        string ShortDescription "nvarchar(300)"
+        string FullDescription "nvarchar(max)"
+        decimal TargetAmount "decimal(18,2)"
+        decimal CurrentAmount "decimal(18,2)"
+        string ImagePath "nvarchar(250)"
+        bit IsFeatured "bit"
+        bit IsActive "bit"
+        datetime StartDate "datetime2"
+        datetime EndDate "datetime2"
+        datetime CreatedAt "datetime2"
+        int NgoId FK "int"
+    }
+
+    Donations {
+        int Id PK "int IDENTITY"
+        string TransactionReference UK "nvarchar(60)"
+        decimal Amount "decimal(18,2)"
+        datetime DonationDate "datetime2"
+        string DonorName "nvarchar(100)"
+        string DonorEmail "nvarchar(100)"
+        string DonorPhone "nvarchar(30)"
+        string PaymentStatus "nvarchar(25)"
+        bit IsSimulated "bit"
+        string PaymentNotes "nvarchar(500)"
+        int CauseId FK "int"
+        string UserId FK "nvarchar(450)"
+    }
+
+    Programmes {
+        int Id PK "int IDENTITY"
+        string Title "nvarchar(150)"
+        string Description "nvarchar(max)"
+        datetime EventDate "datetime2"
+        datetime EndDate "datetime2"
+        string Location "nvarchar(200)"
+        string CoordinatorName "nvarchar(100)"
+        string CoordinatorContact "nvarchar(50)"
+        string BannerImagePath "nvarchar(250)"
+        string Status "nvarchar(25)"
+        datetime CreatedAt "datetime2"
+        datetime UpdatedAt "datetime2"
+    }
+
+    ProgrammeInterests {
+        int Id PK "int IDENTITY"
+        int ProgrammeId FK "int"
+        string UserId FK "nvarchar(450)"
+        string ApplicantName "nvarchar(100)"
+        string ApplicantEmail "nvarchar(100)"
+        string ApplicantPhone "nvarchar(30)"
+        string InterestType "nvarchar(50)"
+        string Message "nvarchar(1000)"
+        string VolunteerNote "nvarchar(500)"
+        string Status "nvarchar(25)"
+        datetime SubmissionDate "datetime2"
+        string AdminNotes "nvarchar(500)"
+        datetime ReviewedAt "datetime2"
+    }
+
+    GalleryImages {
+        int Id PK "int IDENTITY"
+        string Title "nvarchar(100)"
+        string Caption "nvarchar(250)"
+        string AltText "nvarchar(150)"
+        string FilePath "nvarchar(250)"
+        datetime UploadedAt "datetime2"
+        int ProgrammeId FK "int"
+    }
+
+    ContactQueries {
+        int Id PK "int IDENTITY"
+        string SenderName "nvarchar(100)"
+        string SenderEmail "nvarchar(100)"
+        string SenderPhone "nvarchar(30)"
+        string Subject "nvarchar(150)"
+        string Message "nvarchar(2000)"
+        datetime SubmittedAt "datetime2"
+        string Status "nvarchar(25)"
+        string AdminNotes "nvarchar(1000)"
+        string AdminReply "nvarchar(2000)"
+        datetime RepliedAt "datetime2"
+        string UserId FK "nvarchar(450)"
+    }
+
+    Partners {
+        int Id PK "int IDENTITY"
+        string Name "nvarchar(150)"
+        string PartnerType "nvarchar(50)"
+        string Description "nvarchar(500)"
+        string WebsiteUrl "nvarchar(250)"
+        string LogoPath "nvarchar(250)"
+        int DisplayOrder "int"
+        bit IsActive "bit"
+        datetime CreatedAt "datetime2"
+    }
+
+    Invitations {
+        int Id PK "int IDENTITY"
+        string SenderUserId "nvarchar(450)"
+        string RecipientEmail "nvarchar(100)"
+        string InviteMessage "nvarchar(500)"
+        datetime SentAt "datetime2"
+        string DeliveryStatus "nvarchar(25)"
+    }
+
+    AboutSections {
+        int Id PK "int IDENTITY"
+        string SectionKey UK "nvarchar(50)"
+        string Title "nvarchar(150)"
+        string Content "nvarchar(max)"
+        string ImagePath "nvarchar(250)"
+        int DisplayOrder "int"
+        bit IsActive "bit"
+        datetime LastModifiedAt "datetime2"
+    }
+
+    %% =========================================================================
+    %% Entity Relationships and Cardinalities
+    %% =========================================================================
+
+    NGOs ||--o{ Causes : "organizes (OnDelete: Restrict)"
+    Causes ||--o{ Donations : "receives (OnDelete: Restrict)"
+    AspNetUsers |o--o{ Donations : "makes (OnDelete: SetNull)"
+
+    Programmes ||--o{ ProgrammeInterests : "receives applications (OnDelete: Cascade)"
+    AspNetUsers |o--o{ ProgrammeInterests : "applies (OnDelete: SetNull)"
+
+    Programmes |o--o{ GalleryImages : "documents (OnDelete: SetNull)"
+
+    AspNetUsers |o--o{ ContactQueries : "submits inquiry (OnDelete: SetNull)"
