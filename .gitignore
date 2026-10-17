@@ -46,3 +46,6 @@ $RECYCLE.BIN/
 *.log
 scratch/
 
+
+publish/
+*.pubxml
