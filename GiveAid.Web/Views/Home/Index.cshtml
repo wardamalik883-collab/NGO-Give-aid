@@ -170,19 +170,32 @@
             {
                 <div class="col-md-6 col-lg-4">
                     <article class="giveaid-cause-card">
-                        <div class="cause-card-img-placeholder" role="img" aria-label="Campaign banner for @cause.Title">
-                            <div class="text-center p-3">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="mb-2">
-                                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
-                                </svg>
-                                <div class="small fw-semibold">@cause.NgoName</div>
+                        @if (!string.IsNullOrWhiteSpace(cause.ImagePath))
+                        {
+                            <div class="cause-card-img-container position-relative" style="height: 190px; overflow: hidden;">
+                                <img src="@cause.ImagePath" class="w-100 h-100 object-fit-cover" alt="Campaign banner for @cause.Title" loading="lazy" />
+                                @if (cause.IsDemo)
+                                {
+                                    <span class="position-absolute top-0 end-0 m-3 badge bg-secondary-subtle text-secondary border">Demo Campaign</span>
+                                }
                             </div>
+                        }
+                        else
+                        {
+                            <div class="cause-card-img-placeholder" role="img" aria-label="Campaign banner for @cause.Title">
+                                <div class="text-center p-3">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="mb-2">
+                                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+                                    </svg>
+                                    <div class="small fw-semibold">@cause.NgoName</div>
+                                </div>
 
-                            @if (cause.IsDemo)
-                            {
-                                <span class="position-absolute top-0 end-0 m-3 badge bg-secondary-subtle text-secondary border">Demo Campaign</span>
-                            }
-                        </div>
+                                @if (cause.IsDemo)
+                                {
+                                    <span class="position-absolute top-0 end-0 m-3 badge bg-secondary-subtle text-secondary border">Demo Campaign</span>
+                                }
+                            </div>
+                        }
 
                         <div class="cause-card-body">
                             <h3 class="h5 fw-bold text-dark mb-2">@cause.Title</h3>
@@ -237,33 +250,41 @@
             @foreach (var programme in Model.UpcomingProgrammes)
             {
                 <div class="col-lg-4 col-md-6">
-                    <div class="giveaid-programme-card">
-                        <div class="programme-date-box" aria-label="Date of event">
-                            <span class="programme-date-day">@programme.EventDate.ToString("dd")</span>
-                            <span class="programme-date-month">@programme.EventDate.ToString("MMM")</span>
+                    <div class="giveaid-programme-card flex-column">
+                        @if (!string.IsNullOrWhiteSpace(programme.BannerImagePath))
+                        {
+                            <div class="rounded overflow-hidden mb-3" style="height: 160px; margin: -1.5rem -1.5rem 0 -1.5rem; position: relative;">
+                                <img src="@programme.BannerImagePath" alt="@programme.Title" class="w-100 h-100 object-fit-cover" loading="lazy" />
+                            </div>
+                        }
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="programme-date-box" aria-label="Date of event">
+                                <span class="programme-date-day">@programme.EventDate.ToString("dd")</span>
+                                <span class="programme-date-month">@programme.EventDate.ToString("MMM")</span>
+                            </div>
+                            <div class="d-flex flex-column flex-grow-1">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="badge bg-success-subtle text-success small">@programme.Status</span>
+                                    @if (programme.IsDemo)
+                                    {
+                                        <span class="badge bg-light text-muted border small">Demo</span>
+                                    }
+                                </div>
+                                <h3 class="h6 fw-bold text-dark mb-1">@programme.Title</h3>
+                                <div class="small text-muted d-flex align-items-center gap-1 mb-2">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <span>@programme.Location</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="d-flex flex-column flex-grow-1">
-                            <div class="d-flex align-items-center gap-2 mb-1">
-                                <span class="badge bg-success-subtle text-success small">@programme.Status</span>
-                                @if (programme.IsDemo)
-                                {
-                                    <span class="badge bg-light text-muted border small">Demo</span>
-                                }
-                            </div>
-                            <h3 class="h6 fw-bold text-dark mb-2">@programme.Title</h3>
-                            <p class="text-muted small mb-3 flex-grow-1">@programme.Description</p>
-                            <div class="small text-muted d-flex align-items-center gap-1 mb-3">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                    <circle cx="12" cy="10" r="3"></circle>
-                                </svg>
-                                <span>@programme.Location</span>
-                            </div>
-                            <div>
-                                <a href="/Programmes" class="btn btn-sm btn-giveaid-outline w-100">
-                                    Volunteer / Details
-                                </a>
-                            </div>
+                        <p class="text-muted small my-2 flex-grow-1">@programme.Description</p>
+                        <div class="mt-auto pt-2">
+                            <a href="/Programmes" class="btn btn-sm btn-giveaid-outline w-100">
+                                Volunteer / Details
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -289,7 +310,14 @@
                 <div class="col-sm-6 col-lg-3">
                     <div class="partner-card">
                         <div class="partner-logo-box" aria-hidden="true">
-                            <span>@(partner.Name.Length > 20 ? partner.Name.Substring(0, 18) + "…" : partner.Name)</span>
+                            @if (!string.IsNullOrWhiteSpace(partner.LogoPath))
+                            {
+                                <img src="@partner.LogoPath" alt="@partner.Name logo" style="max-height: 48px; max-width: 90%; object-fit: contain;" />
+                            }
+                            else
+                            {
+                                <span>@(partner.Name.Length > 20 ? partner.Name.Substring(0, 18) + "…" : partner.Name)</span>
+                            }
                         </div>
                         <h3 class="h6 fw-bold text-dark mb-1">@partner.Name</h3>
                         <span class="badge bg-light text-muted border mb-2">@partner.PartnerType</span>

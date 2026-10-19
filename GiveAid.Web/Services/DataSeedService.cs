@@ -38,6 +38,7 @@ public class DataSeedService
                     Email = "relief@giveaid.org",
                     Phone = "+92 51 9283741",
                     WebsiteUrl = "https://giveaid.org",
+                    LogoPath = "/uploads/ngos/give-aid-relief-foundation.png",
                     IsActive = true,
                     CreatedAt = DateTime.UtcNow
                 };
@@ -49,6 +50,11 @@ public class DataSeedService
             else
             {
                 primaryNgo = await _context.NGOs.FirstAsync();
+                if (string.IsNullOrEmpty(primaryNgo.LogoPath))
+                {
+                    primaryNgo.LogoPath = "/uploads/ngos/give-aid-relief-foundation.png";
+                    await _context.SaveChangesAsync();
+                }
             }
 
             // -------------------------------------------------------------
@@ -65,6 +71,7 @@ public class DataSeedService
                         FullDescription = "Water scarcity in Thar causes severe health crises, especially among children and the elderly. Women currently walk up to 6 kilometers daily under harsh temperatures to fetch brackish, contaminated groundwater. This humanitarian campaign funds the installation of solar-powered deep aquifer submersible pumps and reverse-osmosis filtration units in 12 remote villages. Each installed well provides potable, safe drinking water to over 800 residents for over a decade. All logistics, installation audits, and water quality testing reports will be digitally logged and verified.",
                         TargetAmount = 2500000m,
                         CurrentAmount = 1875000m,
+                        ImagePath = "/uploads/causes/clean-drinking-water-thar.png",
                         IsFeatured = true,
                         IsActive = true,
                         NgoId = primaryNgo.Id,
@@ -77,6 +84,7 @@ public class DataSeedService
                         FullDescription = "Seasonal flooding and waterborne illnesses severely affect riverine farming communities in southern Punjab and Sindh. Many families live hours away from secondary care hospitals. Through this emergency initiative, Give-AID deploys mobile medical vans equipped with ultrasound diagnostics, basic blood testing, and essential medicines. Specialized doctors, nurses, and ophthalmologists conduct 3-day continuous free clinics, screening and treating over 1,500 patients per camp. Free prescription medications and hygiene packages are distributed directly to patients in need.",
                         TargetAmount = 1800000m,
                         CurrentAmount = 1420000m,
+                        ImagePath = "/uploads/causes/emergency-medical-relief-riverine.jpg",
                         IsFeatured = true,
                         IsActive = true,
                         NgoId = primaryNgo.Id,
@@ -89,6 +97,7 @@ public class DataSeedService
                         FullDescription = "Over 22 million children in Pakistan remain out of formal school due to severe household poverty. Give-AID's Child Education program partners with community non-formal schools to sponsor children from brick-kiln and daily-wage families. Every sponsored kit covers 12 months of curriculum textbooks, notebooks, uniform, school bag, shoes, and access to weekend digital tablet literacy labs. Regular attendance and academic progress are tracked transparently, giving disadvantaged children a path out of generational poverty.",
                         TargetAmount = 1200000m,
                         CurrentAmount = 790000m,
+                        ImagePath = "/uploads/causes/child-education-digital-literacy.jpg",
                         IsFeatured = true,
                         IsActive = true,
                         NgoId = primaryNgo.Id,
@@ -101,6 +110,7 @@ public class DataSeedService
                         FullDescription = "Winter conditions bring acute hardship to vulnerable families lacking heating and adequate nutrition. Give-AID's dignity-first food support initiative delivers high-quality 30-day food baskets containing 20kg wheat flour, 5kg rice, lentils, cooking oil, tea, and dry milk, accompanied by heavy wool blankets and warm jackets. Beneficiary families are vetted through grassroots community committees to ensure aid reaches the most destitute.",
                         TargetAmount = 1500000m,
                         CurrentAmount = 950000m,
+                        ImagePath = "/uploads/causes/winter-warmth-food-ration.jpg",
                         IsFeatured = false,
                         IsActive = true,
                         NgoId = primaryNgo.Id,
@@ -111,6 +121,32 @@ public class DataSeedService
                 _context.Causes.AddRange(initialCauses);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Initial {Count} baseline Causes seeded into SQL Server database.", initialCauses.Count);
+            }
+            else
+            {
+                // Ensure existing Causes have image paths assigned
+                var existingCauses = await _context.Causes.ToListAsync();
+                bool causesUpdated = false;
+                foreach (var c in existingCauses)
+                {
+                    if (string.IsNullOrEmpty(c.ImagePath))
+                    {
+                        if (c.Title.Contains("Clean Drinking Water") || c.Title.Contains("Thar"))
+                            c.ImagePath = "/uploads/causes/clean-drinking-water-thar.png";
+                        else if (c.Title.Contains("Medical Relief") || c.Title.Contains("Riverine"))
+                            c.ImagePath = "/uploads/causes/emergency-medical-relief-riverine.jpg";
+                        else if (c.Title.Contains("Child Education") || c.Title.Contains("Literacy"))
+                            c.ImagePath = "/uploads/causes/child-education-digital-literacy.jpg";
+                        else if (c.Title.Contains("Winter Warmth") || c.Title.Contains("Ration"))
+                            c.ImagePath = "/uploads/causes/winter-warmth-food-ration.jpg";
+                        causesUpdated = true;
+                    }
+                }
+                if (causesUpdated)
+                {
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Updated existing Causes with image paths.");
+                }
             }
 
             // -------------------------------------------------------------
@@ -129,6 +165,7 @@ public class DataSeedService
                         Location = "Muzaffargarh District Relief Center, Punjab",
                         CoordinatorName = "Dr. Farhan Qureshi",
                         CoordinatorContact = "+92 300 5551234",
+                        BannerImagePath = "/uploads/programmes/mobile-health-clinic-diagnostic-camp.jpg",
                         Status = "Scheduled",
                         CreatedAt = DateTime.UtcNow.AddDays(-10)
                     },
@@ -141,6 +178,7 @@ public class DataSeedService
                         Location = "Quetta Community Center, Balochistan",
                         CoordinatorName = "Sara Ahmed",
                         CoordinatorContact = "+92 301 9876543",
+                        BannerImagePath = "/uploads/programmes/winter-warmth-ration-distribution-drive.jpg",
                         Status = "Scheduled",
                         CreatedAt = DateTime.UtcNow.AddDays(-8)
                     },
@@ -153,6 +191,7 @@ public class DataSeedService
                         Location = "Mithi & Islamkot, Tharparkar",
                         CoordinatorName = "Tariq Mehmood",
                         CoordinatorContact = "+92 321 4443322",
+                        BannerImagePath = "/uploads/programmes/clean-water-aquifer-verification-mission.png",
                         Status = "Completed",
                         CreatedAt = DateTime.UtcNow.AddDays(-30)
                     }
@@ -161,6 +200,88 @@ public class DataSeedService
                 _context.Programmes.AddRange(initialProgrammes);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Initial {Count} baseline Programmes seeded into SQL Server database.", initialProgrammes.Count);
+            }
+            else
+            {
+                // Ensure existing Programmes have banner image paths assigned
+                var existingProgrammes = await _context.Programmes.ToListAsync();
+                bool progsUpdated = false;
+                foreach (var p in existingProgrammes)
+                {
+                    if (string.IsNullOrEmpty(p.BannerImagePath))
+                    {
+                        if (p.Title.Contains("Mobile Health") || p.Title.Contains("Clinic"))
+                            p.BannerImagePath = "/uploads/programmes/mobile-health-clinic-diagnostic-camp.jpg";
+                        else if (p.Title.Contains("Winter Warmth") || p.Title.Contains("Ration"))
+                            p.BannerImagePath = "/uploads/programmes/winter-warmth-ration-distribution-drive.jpg";
+                        else if (p.Title.Contains("Clean Water") || p.Title.Contains("Aquifer"))
+                            p.BannerImagePath = "/uploads/programmes/clean-water-aquifer-verification-mission.png";
+                        progsUpdated = true;
+                    }
+                }
+                if (progsUpdated)
+                {
+                    await _context.SaveChangesAsync();
+                    _logger.LogInformation("Updated existing Programmes with banner image paths.");
+                }
+            }
+
+            // -------------------------------------------------------------
+            // 4. Ensure initial Gallery Images exist in SQL Server
+            // -------------------------------------------------------------
+            if (!await _context.GalleryImages.AnyAsync())
+            {
+                var cleanWaterProg = await _context.Programmes.FirstOrDefaultAsync(p => p.Title.Contains("Clean Water"));
+                var mobileHealthProg = await _context.Programmes.FirstOrDefaultAsync(p => p.Title.Contains("Mobile Health"));
+                var winterWarmthProg = await _context.Programmes.FirstOrDefaultAsync(p => p.Title.Contains("Winter Warmth"));
+
+                var initialGallery = new List<GalleryImage>();
+
+                for (int i = 1; i <= 15; i++)
+                {
+                    string num = i.ToString("D2");
+                    initialGallery.Add(new GalleryImage
+                    {
+                        Title = $"Clean Water Aquifer Verification - Camp #{num}",
+                        Caption = "Field team conducting water filtration, aquifer depth testing, and clean supply installations.",
+                        AltText = $"Clean Water Aquifer Verification Mission field photo {num}",
+                        FilePath = $"/uploads/gallery/Clean_Water_Aquifer_Verification_{num}.jpg",
+                        UploadedAt = DateTime.UtcNow.AddDays(-25).AddHours(i),
+                        ProgrammeId = cleanWaterProg?.Id
+                    });
+                }
+
+                for (int i = 1; i <= 15; i++)
+                {
+                    string num = i.ToString("D2");
+                    initialGallery.Add(new GalleryImage
+                    {
+                        Title = $"Mobile Health Clinic & Diagnostic Camp - Session #{num}",
+                        Caption = "Doctors and nurses providing free clinical screenings, primary diagnostics, and medicines.",
+                        AltText = $"Mobile Health Clinic and Diagnostic Camp field photo {num}",
+                        FilePath = $"/uploads/gallery/Mobile_Health_Clinic_Diagnostic_Camp_{num}.jpg",
+                        UploadedAt = DateTime.UtcNow.AddDays(-10).AddHours(i),
+                        ProgrammeId = mobileHealthProg?.Id
+                    });
+                }
+
+                for (int i = 1; i <= 15; i++)
+                {
+                    string num = i.ToString("D2");
+                    initialGallery.Add(new GalleryImage
+                    {
+                        Title = $"Winter Warmth & Ration Distribution - Relief Drive #{num}",
+                        Caption = "Volunteers distributing thermal blankets, winter clothing, and monthly staple food packs.",
+                        AltText = $"Winter Warmth and Ration Distribution Drive relief distribution photo {num}",
+                        FilePath = $"/uploads/gallery/Winter_Warmth_Ration_Distribution_{num}.jpg",
+                        UploadedAt = DateTime.UtcNow.AddDays(-5).AddHours(i),
+                        ProgrammeId = winterWarmthProg?.Id
+                    });
+                }
+
+                _context.GalleryImages.AddRange(initialGallery);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Initial {Count} baseline Gallery Images seeded into SQL Server database.", initialGallery.Count);
             }
         }
         catch (Exception ex)
