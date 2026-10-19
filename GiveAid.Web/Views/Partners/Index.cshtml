@@ -38,26 +38,26 @@
                 @foreach (var ngo in ngos)
                 {
                     <div class="col-md-6 col-lg-4">
-                        <div class="giveaid-card h-100 p-0 overflow-hidden">
-                            <div class="p-4 text-center" style="min-height: 140px; display: flex; align-items: center; justify-content: center; background: var(--giveaid-primary-light);">
+                        <div class="giveaid-card h-100 p-0 overflow-hidden d-flex flex-column shadow-sm hover-shadow transition">
+                            <div class="position-relative overflow-hidden" style="height: 220px; background-color: var(--giveaid-primary-light);">
                                 @if (!string.IsNullOrEmpty(ngo.LogoPath))
                                 {
-                                    <img src="@ngo.LogoPath" alt="@ngo.Name logo" style="max-height: 100px; max-width: 80%; object-fit: contain;" />
+                                    <img src="@ngo.LogoPath" alt="@ngo.Name" class="w-100 h-100" style="object-fit: cover; display: block; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" loading="lazy" />
                                 }
                                 else
                                 {
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto" style="width:80px;height:80px;background:var(--giveaid-primary-subtle);color:var(--giveaid-primary);font-weight:700;font-size:28px;">
+                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center" style="background: var(--giveaid-primary-subtle); color: var(--giveaid-primary); font-weight: 700; font-size: 32px;">
                                         @ngo.Name[0]
                                     </div>
                                 }
                             </div>
-                            <div class="p-4">
-                                <h5 class="fw-bold mb-1">@ngo.Name</h5>
+                            <div class="p-4 d-flex flex-column flex-grow-1">
+                                <h5 class="fw-bold mb-1 text-dark">@ngo.Name</h5>
                                 @if (!string.IsNullOrEmpty(ngo.RegistrationNumber))
                                 {
-                                    <span class="badge bg-primary-subtle text-primary mb-2">@ngo.RegistrationNumber</span>
+                                    <span class="badge bg-primary-subtle text-primary align-self-start mb-2">@ngo.RegistrationNumber</span>
                                 }
-                                <p class="text-muted small mb-3">
+                                <p class="text-muted small mb-3 flex-grow-1">
                                     @if (!string.IsNullOrEmpty(ngo.Description))
                                     {
                                         @(ngo.Description.Length > 150 ? ngo.Description[..150] + "…" : ngo.Description)
@@ -67,7 +67,9 @@
                                         <span>Accredited humanitarian NGO partner.</span>
                                     }
                                 </p>
-                                <a asp-action="NgoDetails" asp-route-id="@ngo.Id" class="btn btn-sm btn-giveaid-outline">View Profile &rarr;</a>
+                                <div class="mt-auto pt-2">
+                                    <a asp-action="NgoDetails" asp-route-id="@ngo.Id" class="btn btn-sm btn-giveaid-outline">View Profile &rarr;</a>
+                                </div>
                             </div>
                         </div>
                     </div>
