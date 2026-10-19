@@ -912,3 +912,12 @@ main#main-content {
   transform: translateX(4px);
   box-shadow: var(--giveaid-shadow-sm);
 }
+
+/* Object-fit utility fallbacks */
+.object-fit-cover {
+  object-fit: cover !important;
+}
+
+.object-fit-contain {
+  object-fit: contain !important;
+}

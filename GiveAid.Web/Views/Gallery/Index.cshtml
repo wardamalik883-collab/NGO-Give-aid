@@ -68,7 +68,7 @@
                          style="cursor: pointer;">
                         
                         <div class="position-relative overflow-hidden bg-light" style="height: 200px;">
-                            <img src="@img.ImagePath" alt="@img.AltText" class="w-100 h-100 object-fit-cover" style="transition: transform 0.3s ease;"
+                            <img src="@img.ImagePath" alt="@img.AltText" class="w-100 h-100 object-fit-cover" style="object-fit: cover; width: 100%; height: 100%; display: block; transition: transform 0.3s ease;"
                                  onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" loading="lazy" />
                             
                             @if (img.Programme != null)

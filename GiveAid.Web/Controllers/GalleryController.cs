@@ -45,7 +45,7 @@ public class GalleryController : Controller
         }
 
         var images = await query
-            .OrderByDescending(g => g.UploadedAt)
+            .OrderBy(g => g.Id)
             .ToListAsync();
 
         var viewModel = new GalleryIndexViewModel
