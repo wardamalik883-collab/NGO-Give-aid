@@ -12,6 +12,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Give-AID Admin Portal</title>
 
+    <!-- Favicon & App Icons (Cache-Busted) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="~/img/icon-32.png?v=20261020" />
+    <link rel="icon" type="image/png" sizes="16x16" href="~/img/icon-16.png?v=20261020" />
+    <link rel="apple-touch-icon" sizes="180x180" href="~/img/apple-touch-icon.png?v=20261020" />
+    <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico?v=20261020" />
+
     <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
@@ -35,8 +41,8 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <a class="navbar-brand me-3" asp-controller="Admin" asp-action="Index">
-                    <span class="rounded bg-teal-600 px-2 py-1 text-white fw-bold me-1" style="background: var(--giveaid-primary, #0f766e);">G</span>
+                <a class="navbar-brand me-3 d-flex align-items-center gap-2" asp-controller="Admin" asp-action="Index">
+                    <img src="~/img/icon.png" alt="Give-AID Logo" style="height: 30px; width: 30px; object-fit: contain;" />
                     <span>Give-AID</span>
                     <span class="badge bg-danger text-white rounded-pill px-2 py-1 ms-1 small" style="font-size: 0.72rem;">Admin Portal</span>
                 </a>
