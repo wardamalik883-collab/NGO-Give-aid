@@ -123,6 +123,26 @@ main#main-content {
   text-decoration: none;
 }
 
+.giveaid-brand-logo {
+  height: 44px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.giveaid-brand:hover .giveaid-brand-logo {
+  transform: scale(1.03);
+}
+
+@media (max-width: 576px) {
+  .giveaid-brand-logo {
+    height: 38px;
+    max-width: 175px;
+  }
+}
+
 .giveaid-brand-icon {
   width: 42px;
   height: 42px;
